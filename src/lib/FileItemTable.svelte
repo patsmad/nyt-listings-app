@@ -1,27 +1,55 @@
 <script>
-export let file_items;
-let display_table = false;
+import { derived } from 'svelte/store'
+import { annotatedFile, FileItem } from './model.js';
+
+let displayTable = false;
+
+let fileItems = derived(annotatedFile, annotatedFile => annotatedFile.items?.map(item => {
+    let boxes = item.boxes.map(box => {
+        let links = box.links.map(link => new FileItem(item.id, item.x, item.y, link.link))
+        return links.length > 0 ? links : [new FileItem(item.id, item.x, item.y, '')]
+    })
+    return boxes.length > 0 ? boxes : [new FileItem(item.id, item.x, item.y, '')]
+}).flat(2))
+
+let asc = true
+function sortColumnFunction(fnc) {
+    return () => {
+        fileItems = derived(
+            fileItems,
+            fileItems => fileItems
+                .sort((itemA, itemB) => {
+                    if (fnc(itemA) > fnc(itemB)) { return -1 + 2 * asc; }
+                    if (fnc(itemA) < fnc(itemB)) { return 1 - 2 * asc; }
+                    return 0;
+                })
+        );
+        asc = !asc;
+    }
+}
 </script>
 
 <table class="file-item-table">
-    <tr>
-        <th>ID</th>
-        <th>X</th>
-        <th>Y</th>
-        <th>LINK</th>
-    </tr>
-    {#each $file_items as file_item}
-        {#each file_item.boxes as item_box}
-            {#each item_box.links as link}
-            <tr>
-                <td>{file_item.id}</td>
-                <td>{file_item.x}</td>
-                <td>{file_item.y}</td>
-                <td><a href={link.link} target="_blank">{link.link}</a></td>
-            </tr>
-            {/each}
+    <thead>
+        <tr>
+            <th on:click={sortColumnFunction(item => item.id)}>ID</th>
+            <th on:click={sortColumnFunction(item => item.x)}>X</th>
+            <th on:click={sortColumnFunction(item => item.y)}>Y</th>
+            <th on:click={sortColumnFunction(item => item.link)}>LINK</th>
+        </tr>
+    </thead>
+    <tbody>
+    {#if $fileItems}
+        {#each $fileItems as fileItem}
+        <tr>
+            <td>{fileItem.id}</td>
+            <td>{fileItem.x}</td>
+            <td>{fileItem.y}</td>
+            <td><a href={fileItem.link} target="_blank">{fileItem.link}</a></td>
+        </tr>
         {/each}
-    {/each}
+    {/if}
+    </tbody>
 </table>
 
 <style>

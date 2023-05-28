@@ -1,23 +1,23 @@
 <script>
 import { onMount } from "svelte";
-import { writable } from "svelte/store";
-import FileItemTable from './FileItemTable.svelte'
+import { writable, derived } from "svelte/store";
+import { annotatedFileData } from './model.js';
+import FileItemTable from './FileItemTable.svelte';
 
 let selected;
-let files = writable([]);
-export let file_items = writable([]);
+let files = writable([]);;
 let display_table = false;
 
 onMount(async () => {
-  fetch('http://localhost:5000/files/?api_key=' + import.meta.env.VITE_API_KEY)
-  .then(response => response.json())
-  .then(data => files.set(data))
+    fetch('http://localhost:5000/files/?api_key=' + import.meta.env.VITE_API_KEY)
+        .then(response => response.json())
+        .then(data => files.set(data))
 });
 
 function handleFileSubmit() {
     fetch('http://localhost:5000/file/?file_id=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
-      .then(response => response.json())
-      .then(data => file_items.set(data.items))
+        .then(response => response.json())
+        .then(data => annotatedFileData.set(data))
     display_table = true;
 }
 </script>
@@ -38,7 +38,7 @@ function handleFileSubmit() {
     </form>
     {#if display_table}
     <div class="card">
-        <FileItemTable file_items={file_items} />
+        <FileItemTable />
     </div>
     {/if}
 </main>
