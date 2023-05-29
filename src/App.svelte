@@ -1,15 +1,17 @@
 <script>
-  import bmtLogo from './assets/bmtlogo1.png'
-  import FileList from './lib/FileList.svelte'
+    import bmtLogo from './assets/bmtlogo1.png'
+    import FileList from './lib/FileList.svelte'
 </script>
 
 <main>
-  <div>
-    <a href="https://www.badmovietwins.com" target="_blank" rel="noreferrer">
-      <img src={bmtLogo} class="logo bmt" alt="BMT Logo" />
-    </a>
+  <div class="heading">
+    <div>
+      <a href="https://www.badmovietwins.com" target="_blank" rel="noreferrer">
+        <img src={bmtLogo} class="logo bmt" alt="BMT Logo" />
+      </a>
+    </div>
+    <h1>BMT / New York Times</h1>
   </div>
-  <h1>The BMT New York Times Project</h1>
 
   <div class="card">
     <FileList />
@@ -25,5 +27,9 @@
   }
   .logo.bmt:hover {
     filter: drop-shadow(0 0 2em #117bb7aa);
+  }
+  .heading {
+    display: flex;
+    justify-content: space-between;
   }
 </style>
