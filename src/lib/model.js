@@ -5,28 +5,40 @@ export const annotatedFile = derived(annotatedFileData, ($annotatedFileData) => 
     return new AnnotatedFile($annotatedFileData.id, $annotatedFileData.name, $annotatedFileData.items?.map(item => {
         return new Item(item.id, item.x, item.y, item.boxes?.map(box => {
             return new Box(box.id, box.left, box.top, box.width, box.height, box.links?.map(link => {
-                return new Link(link.id, link.link, link.confirmed, link.link_info?.title??'', link.link_info?.year??'')
+                return new Link(
+                    link.id,
+                    link.link,
+                    link.confirmed,
+                    link.link_info?.title??'',
+                    link.link_info?.year??'',
+                    link.link_info?.rating??0.0,
+                    link.link_info?.votes??0
+                )
             }))
         }))
     }))
 });
 
 export class FileItem {
-    constructor(id, link, title, year) {
+    constructor(id, link, title, year, rating, votes) {
         this.id = id;
         this.link = link;
         this.title = title;
         this.year = year;
+        this.rating = rating;
+        this.votes = votes;
     }
 }
 
 class Link {
-  constructor(id, link, confirmed, title, year) {
+  constructor(id, link, confirmed, title, year, rating, votes) {
     this.id = id;
     this.link = link;
     this.confirmed = confirmed;
     this.title = title;
     this.year = year;
+    this.rating = rating;
+    this.votes = votes;
   }
 }
 

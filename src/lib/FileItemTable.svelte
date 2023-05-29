@@ -6,11 +6,14 @@ let displayTable = false;
 
 let fileItems = derived(annotatedFile, annotatedFile => annotatedFile.items?.map(item => {
     let boxes = item.boxes.map(box => {
-        let links = box.links.map(link => new FileItem(item.id, link.link, link.title, link.year))
-        return links.length > 0 ? links : [new FileItem(item.id, '', '', '')]
+        let links = box.links.map(link => new FileItem(item.id, link.link, link.title, link.year, link.rating, link.votes))
+        return links.length > 0 ? links : [new FileItem(item.id, '', '', '', 0.0, 0)]
     })
-    return boxes.length > 0 ? boxes : [new FileItem(item.id, '', '', '')]
+    return boxes.length > 0 ? boxes : [new FileItem(item.id, '', '', '', 0.0, 0)]
 }).flat(2))
+
+$: console.log($annotatedFile);
+$: console.log($fileItems);
 
 let asc = true
 function sortColumnFunction(fnc) {
@@ -35,6 +38,8 @@ function sortColumnFunction(fnc) {
             <th on:click={sortColumnFunction(item => item.id)}>ID</th>
             <th on:click={sortColumnFunction(item => item.title)}>Title</th>
             <th on:click={sortColumnFunction(item => item.year)}>Year</th>
+            <th on:click={sortColumnFunction(item => item.rating)}>Rating</th>
+            <th on:click={sortColumnFunction(item => item.votes)}>Votes</th>
             <th on:click={sortColumnFunction(item => item.link)}>Link</th>
         </tr>
     </thead>
@@ -45,6 +50,8 @@ function sortColumnFunction(fnc) {
             <td>{fileItem.id}</td>
             <td>{fileItem.title}</td>
             <td>{fileItem.year}</td>
+            <td>{fileItem.rating}</td>
+            <td>{fileItem.votes}</td>
             <td><a href={fileItem.link} target="_blank">{fileItem.link}</a></td>
         </tr>
         {/each}
