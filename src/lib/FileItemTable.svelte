@@ -12,9 +12,6 @@ let fileItems = derived(annotatedFile, annotatedFile => annotatedFile.items?.map
     return boxes.length > 0 ? boxes : [new FileItem(item.id, '', '', '', 0.0, 0)]
 }).flat(2))
 
-$: console.log($annotatedFile);
-$: console.log($fileItems);
-
 let asc = true
 function sortColumnFunction(fnc) {
     return () => {
