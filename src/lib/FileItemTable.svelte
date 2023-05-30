@@ -14,9 +14,11 @@ let fileItems = derived(annotatedFile, annotatedFile => annotatedFile.items?.map
     return boxes.length > 0 ? boxes : [new FileItem(item.id, '', '', '', 0.0, 0)]
 }).flat(2))
 
-let asc = true
-function sortColumnFunction(fnc) {
+let asc = true;
+let active = 'id';
+function sortColumnFunction(fnc, activeTH) {
     return () => {
+        asc = !asc || active !== activeTH;
         fileItems = derived(
             fileItems,
             fileItems => fileItems
@@ -26,7 +28,7 @@ function sortColumnFunction(fnc) {
                     return 0;
                 })
         );
-        asc = !asc;
+        active = activeTH;
     }
 }
 </script>
@@ -34,12 +36,12 @@ function sortColumnFunction(fnc) {
 <table class="file-item-table">
     <thead>
         <tr>
-            <th on:click={sortColumnFunction(item => item.id)}>ID</th>
-            <th on:click={sortColumnFunction(item => item.title)}>Title</th>
-            <th on:click={sortColumnFunction(item => item.year)}>Year</th>
-            <th on:click={sortColumnFunction(item => item.rating)}>Rating</th>
-            <th on:click={sortColumnFunction(item => item.votes)}>Votes</th>
-            <th on:click={sortColumnFunction(item => item.link)}>Link</th>
+            <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.id, 'id')}>ID</th>
+            <th class="isSortable {active === 'title' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.title, 'title')}>Title</th>
+            <th class="isSortable {active === 'year' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.year, 'year')}>Year</th>
+            <th class="isSortable {active === 'rating' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.rating, 'rating')}>Rating</th>
+            <th class="isSortable {active === 'votes' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.votes, 'votes')}>Votes</th>
+            <th class="isSortable {active === 'link' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.link, 'link')}>Link</th>
         </tr>
     </thead>
     <tbody>
@@ -74,5 +76,17 @@ th, td {
 
 th {
     background-color: #117bb7aa;
+}
+
+.isSortable {
+    cursor: pointer;
+}
+.isActive.asc:after {
+    content: "▼";
+    padding-left: 5px;
+}
+.isActive.desc:after {
+    content: "▲";
+    padding-left: 5px;
 }
 </style>
