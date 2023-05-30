@@ -6,7 +6,9 @@ let displayTable = false;
 
 let fileItems = derived(annotatedFile, annotatedFile => annotatedFile.items?.map(item => {
     let boxes = item.boxes.map(box => {
-        let links = box.links.map(link => new FileItem(item.id, link.link, link.title, link.year, link.rating, link.votes))
+        let links = box.links.map(link => {
+            return new FileItem(item.id, link.link, link.title, link.year, link.rating, link.votes)
+        })
         return links.length > 0 ? links : [new FileItem(item.id, '', '', '', 0.0, 0)]
     })
     return boxes.length > 0 ? boxes : [new FileItem(item.id, '', '', '', 0.0, 0)]
