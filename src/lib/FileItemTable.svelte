@@ -1,8 +1,7 @@
 <script>
+import imdbLogo from '../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { annotatedFile, FileItem } from './model.js';
-
-let displayTable = false;
 
 let fileItems = derived(annotatedFile, annotatedFile => annotatedFile.items?.map(item => {
     let boxes = item.boxes.map(box => {
@@ -53,7 +52,11 @@ function sortColumnFunction(fnc, activeTH) {
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>
             <td>{fileItem.votes}</td>
-            <td><a href={fileItem.link} target="_blank">{fileItem.link}</a></td>
+            {#if fileItem.link}
+            <td><a href={fileItem.link} target="_blank"><img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" /></a></td>
+            {:else}
+            <td></td>
+            {/if}
         </tr>
         {/each}
     {/if}
@@ -88,5 +91,8 @@ th {
 .isActive.desc:after {
     content: "▲";
     padding-left: 5px;
+}
+.imdb-logo {
+    height: 32px;
 }
 </style>

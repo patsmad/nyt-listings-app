@@ -5,10 +5,11 @@ import { annotatedFileData } from './model.js';
 import FileItemTable from './FileItemTable.svelte';
 
 let selected;
-let files = writable([]);;
+let files = writable([]);
 let display_table = false;
 
 onMount(async () => {
+    annotatedFileData.set([]);
     fetch('http://localhost:5000/files/?api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => files.set(data))
