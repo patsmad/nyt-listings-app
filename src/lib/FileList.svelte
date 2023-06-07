@@ -5,6 +5,7 @@ import { annotatedFileData } from './model.js';
 import FileItemTable from './FileItemTable.svelte';
 
 let selected;
+let img_src;
 let files = writable([]);
 let display_table = false;
 
@@ -16,9 +17,10 @@ onMount(async () => {
 });
 
 function handleFileSubmit() {
-    fetch('http://localhost:5000/file/?file_id=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+    fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
+    img_src = 'http://localhost:5000/img/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY
     display_table = true;
 }
 </script>
@@ -38,6 +40,7 @@ function handleFileSubmit() {
     </button>
     </form>
     {#if display_table}
+    <img src={img_src} height="1000" alt="listing page for file with id: {selected}"/>
     <div class="card">
         <FileItemTable />
     </div>
