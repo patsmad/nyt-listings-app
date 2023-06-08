@@ -40,9 +40,8 @@ function handleFileSubmit() {
     </button>
     </form>
     {#if display_table}
-    <img src={img_src} height="1000" alt="listing page for file with id: {selected}"/>
     <div class="card">
-        <FileItemTable />
+        <FileItemTable img_src={img_src} />
     </div>
     {/if}
 </main>

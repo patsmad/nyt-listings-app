@@ -20,13 +20,30 @@ export const annotatedFile = derived(annotatedFileData, ($annotatedFileData) => 
 });
 
 export class FileItem {
-    constructor(id, link, title, year, rating, votes) {
+    constructor(id, left, top, width, height, link, title, year, rating, votes, confirmed) {
         this.id = id;
+        this.left = left;
+        this.top = top;
+        this.width = width;
+        this.height = height;
         this.link = link;
         this.title = title;
         this.year = year;
         this.rating = rating;
         this.votes = votes;
+        this.confirmed = confirmed
+    }
+
+    scale(target) {
+        return target / this.width;
+    }
+
+    translation(target) {
+        if (this.scale(target) <= 1) {
+            return (this.width - target) / 2;
+        } else {
+            return 0;
+        }
     }
 }
 
