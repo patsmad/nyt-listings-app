@@ -137,7 +137,7 @@ async function addLink(box_id) {
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>
             <td>{fileItem.votes}</td>
-            <td on:click={linkEditable(fileItem.link, index)}>
+            <td on:dblclick={linkEditable(fileItem.link, index)}>
             {#if index != editable}
                 {#if fileItem.link}
                 <a href={fileItem.link} target="_blank">
