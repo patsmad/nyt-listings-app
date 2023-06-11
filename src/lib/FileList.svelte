@@ -41,7 +41,7 @@ function handleFileSubmit() {
     </form>
     {#if display_table}
     <div class="card">
-        <FileItemTable img_src={img_src} />
+        <FileItemTable img_src={img_src} selected={selected} />
     </div>
     {/if}
 </main>
