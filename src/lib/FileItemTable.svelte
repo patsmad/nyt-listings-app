@@ -52,6 +52,7 @@ async function updateConfirmed(link_id, confirmed) {
     sortedFileItems = sortFileItems();
 }
 
+let deletable=-1
 let editable=-1;
 let new_value='';
 let old_value='';
@@ -100,6 +101,22 @@ async function addLink(box_id) {
     new_value = '';
     old_value = '';
 }
+function itemDeletable(index) {
+    return () => deletable = index;
+}
+async function deleteItem(item_id) {
+    await fetch('http://localhost:5000/item/delete?api_key=' + import.meta.env.VITE_API_KEY, {
+        method: 'POST',
+        body: JSON.stringify({
+            'id': item_id
+        })
+    })
+    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        .then(response => response.json())
+        .then(data => annotatedFileData.set(data))
+    sortedFileItems = sortFileItems();
+    deletable = -1;
+}
 </script>
 
 <table class="file-item-table">
@@ -119,9 +136,15 @@ async function addLink(box_id) {
     {#if $sortedFileItems}
         {#each $sortedFileItems as fileItem, index}
         <tr>
-            <td>{fileItem.id}</td>
+            <td on:dblclick={itemDeletable(index)}>
+                {#if deletable != index}
+                {fileItem.id}
+                {:else}
+                <button class="x" on:click={deleteItem(fileItem.id)}>X</button>
+                {/if}
+            </td>
             <td><input type="checkbox" id="confirmed-{fileItem.id}" bind:checked={fileItem.confirmed} on:click={updateConfirmed(fileItem.link_id, fileItem.confirmed)}></td>
-            <td style="max-width: 400px;">
+            <td style="max-width: 400px; height: {fileItem.scale(400) * fileItem.height}px">
                 {#if fileItem.height}
                 <img src={img_src} style="
                     width: {fileItem.width}px;
@@ -193,5 +216,16 @@ th {
 }
 .imdb-logo {
     height: 32px;
+}
+.x {
+	border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #ff5248;
+    cursor: pointer;
+    transition: border-color 0.25s;
 }
 </style>
