@@ -1,13 +1,18 @@
 <script>
 import { onMount } from "svelte";
 import { writable, derived } from "svelte/store";
-import { annotatedFileData } from './model.js';
+import { annotatedFileData } from './file.js';
 import FileItemTable from './FileItemTable.svelte';
 
-let selected;
 let img_src;
 let files = writable([]);
 let display_table = false;
+
+let urlParams = new URLSearchParams(window.location.search);
+let selected = urlParams.get('file_id');
+if (selected) {
+    handleSelected();
+}
 
 onMount(async () => {
     annotatedFileData.set([]);
@@ -16,7 +21,7 @@ onMount(async () => {
         .then(data => files.set(data))
 });
 
-function handleFileSubmit() {
+function handleSelected() {
     fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
@@ -27,18 +32,18 @@ function handleFileSubmit() {
 
 <main>
 	<h2>Select a file:</h2>
-	<form on:submit|preventDefault={handleFileSubmit}>
     <select class='file-select' bind:value={selected}>
     {#each $files as file}
-        <option value={file.id}>
+        <option value={file.id} selected={file.id == selected ? "selected" : ""}>
             {file.name}
         </option>
     {/each}
     </select>
-    <button submit='file-select-button' disabled={!selected} type=submit>
-        Submit
-    </button>
-    </form>
+    {#if selected}
+    <a href="/file?file_id={selected}"><button>Submit</button></a>
+    {:else}
+    <button disabled={!selected}>Submit</button>
+    {/if}
     {#if display_table}
     <div class="card">
         <FileItemTable img_src={img_src} selected={selected} />
