@@ -1,7 +1,7 @@
 <script>
-import imdbLogo from '../assets/IMDb_Logo_Square_Gold.png'
+import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
-import { linkFiles } from './model.js';
+import { linkFiles } from './link.js';
 
 let asc = true;
 let active = 'id';

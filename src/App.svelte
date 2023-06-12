@@ -1,9 +1,10 @@
 <script>
     import bmtLogo from './assets/bmtlogo1.png'
-    import FileList from './lib/FileList.svelte'
-    import LinkList from './lib/LinkList.svelte'
+    import FileList from './lib/file/FileList.svelte'
+    import LinkList from './lib/link/LinkList.svelte'
 
-    let page = 'file';
+    let url = new URL(window.location);
+    let page = url.pathname;
 </script>
 
 <main>
@@ -16,16 +17,16 @@
     <h1>BMT / New York Times</h1>
   </div>
   <span class="mean">
-  <button on:click={() => page = 'file'}>File Search</button>
-  <button on:click={() => page = 'link'}>Link Search</button>
+  <a class="btn" href="/file"><button>File Search</button></a>
+  <a class="btn" href="/link"><button>Link Search</button></a>
   </span>
 
-  {#if page === 'file'}
+  {#if page === '/file' || page === '/'}
   <div class="card">
     <FileList />
   </div>
   {/if}
-  {#if page === 'link'}
+  {#if page === '/link'}
   <div class="card">
     <LinkList />
   </div>
