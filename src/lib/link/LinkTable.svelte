@@ -22,6 +22,10 @@ function sortColumnFunction(fnc, activeTH) {
     }
 }
 
+function getImgSrc(linkFile) {
+    return 'http://localhost:5000/img/?file_id=' + linkFile.file_id + '&api_key=' + import.meta.env.VITE_API_KEY +
+        '&box=' + linkFile.left + ',' + linkFile.top + ',' + linkFile.width + ',' + linkFile.height
+}
 </script>
 
 <table class="link-file-info">
@@ -39,6 +43,7 @@ function sortColumnFunction(fnc, activeTH) {
         <tr>
             <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.id, 'id')}>ID</th>
             <th class="isSortable {active === 'file' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.file, 'file')}>File</th>
+            <th>Snippet</th>
             <th class="isSortable {active === 'confirmed' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.confirmed, 'confirmed')}>Confirmed</th>
         </tr>
     </thead>
@@ -46,8 +51,18 @@ function sortColumnFunction(fnc, activeTH) {
     {#if $linkFilesList}
         {#each $linkFilesList as linkFile}
         <tr>
-            <td>{linkFile.id}</td>
+            <td>{linkFile.link_id}</td>
             <td>{linkFile.file}</td>
+            <td style="max-width: 400px; height: {linkFile.scale(400) * linkFile.height}px">
+                {#if linkFile.height}
+                <img src={getImgSrc(linkFile)} style="
+                    width: {linkFile.width}px;
+                    height: {linkFile.height}px;
+                    scale: {linkFile.scale(400)};
+                    translate: -{linkFile.translation(400)}px 0px;
+                " alt="Snippet for {linkFile.title} ({linkFile.file})"/>
+                {/if}
+            </td>
             <td>{linkFile.confirmed}</td>
         </tr>
         {/each}

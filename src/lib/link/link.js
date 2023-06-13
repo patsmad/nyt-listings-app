@@ -12,8 +12,14 @@ export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
         ),
         $linkFilesData.link_files?.map(link_file => {
             return new LinkFile(
+                link_file.file_id,
+                link_file.file,
+                link_file.box_id,
+                link_file.left,
+                link_file.top,
+                link_file.width,
+                link_file.height,
                 link_file.link_id,
-                link_file.name,
                 link_file.confirmed
             )
         })
@@ -38,9 +44,27 @@ class LinkInfo {
 }
 
 class LinkFile {
-    constructor(id, file, confirmed) {
-        this.id = id;
+    constructor(file_id, file, box_id, left, top, width, height, link_id, confirmed) {
+        this.file_id = file_id;
         this.file = file;
+        this.box_id = box_id;
+        this.left = left;
+        this.top = top;
+        this.width = width;
+        this.height = height;
+        this.link_id = link_id;
         this.confirmed = confirmed;
+    }
+
+    scale(target) {
+        return target / this.width;
+    }
+
+    translation(target) {
+        if (this.scale(target) <= 1) {
+            return (this.width - target) / 2;
+        } else {
+            return 0;
+        }
     }
 }
