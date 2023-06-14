@@ -1,21 +1,11 @@
 <script>
 import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
-import { annotatedFileData, annotatedFile } from './annotated.js'
-import { FileItem } from './file.js';
+import { annotatedFileData } from './annotated.js'
+import { fileItems } from './file.js';
 
 export let img_src;
 export let selected;
-
-let fileItems = derived(annotatedFile, annotatedFile => annotatedFile.items?.map(item => {
-    let boxes = item.boxes.map(box => {
-        let links = box.links.map(link => {
-            return new FileItem(item.id, box.id, box.left, box.top, box.width, box.height, link.id, link.link, link.title, link.year, link.rating, link.votes, link.confirmed)
-        })
-        return links.length > 0 ? links : [new FileItem(item.id, box.id, box.left, box.top, box.width, box.height, null, '', '', '', null, null, false)]
-    })
-    return boxes.length > 0 ? boxes : [new FileItem(item.id, null, null, null, null, null, null, '', '', '', null, null, false)]
-}).flat(2))
 
 let asc = true;
 let active = 'id';
