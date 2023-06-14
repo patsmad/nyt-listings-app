@@ -156,7 +156,7 @@ async function deleteItem(item_id) {
                 " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
                 {/if}
             </td>
-            <td>{fileItem.title}</td>
+            <td><a href='/link?link_id={fileItem.link}'>{fileItem.title}</a></td>
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>
             <td>{fileItem.votes}</td>

@@ -11,6 +11,7 @@ let display_table = false;
 let urlParams = new URLSearchParams(window.location.search);
 let selected = urlParams.get('file_id');
 if (selected) {
+    selected = parseInt(selected);
     handleSelected();
 }
 
@@ -33,16 +34,14 @@ function handleSelected() {
 <main>
 	<h2>Select a file:</h2>
     <select class='file-select' bind:value={selected}>
-    {#each $files as file}
-        <option value={file.id} selected={file.id == selected ? "selected" : ""}>
-            {file.name}
-        </option>
-    {/each}
+        {#each $files as file}
+        <option value={file.id}>{file.name}</option>
+        {/each}
     </select>
     {#if selected}
     <a href="/file?file_id={selected}"><button>Submit</button></a>
     {:else}
-    <button disabled={!selected}>Submit</button>
+    <button disabled>Submit</button>
     {/if}
     {#if display_table}
     <div class="card">

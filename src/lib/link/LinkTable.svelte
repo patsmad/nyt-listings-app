@@ -52,7 +52,7 @@ function getImgSrc(linkFile) {
         {#each $linkFilesList as linkFile}
         <tr>
             <td>{linkFile.link_id}</td>
-            <td>{linkFile.file}</td>
+            <td><a href="/file?file_id={linkFile.file_id}">{linkFile.file}</a></td>
             <td style="max-width: 400px; height: {linkFile.scale(400) * linkFile.height}px">
                 {#if linkFile.height}
                 <img src={getImgSrc(linkFile)} style="
