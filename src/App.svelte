@@ -2,7 +2,6 @@
     import bmtLogo from './assets/bmtlogo1.png'
     import FileList from './lib/file/FileList.svelte'
     import LinkList from './lib/link/LinkList.svelte'
-    import AnnotatedFile from './lib/annotated/AnnotatedFile.svelte'
 
     let url = new URL(window.location);
     let page = url.pathname;
@@ -20,7 +19,6 @@
   <span class="mean">
   <a class="btn" href="/file"><button>File Search</button></a>
   <a class="btn" href="/link"><button>Link Search</button></a>
-  <a class="btn" href="/annotated"><button>Annotated File</button></a>
   </span>
 
   {#if page === '/file' || page === '/'}
@@ -31,11 +29,6 @@
   {#if page === '/link'}
   <div class="card">
     <LinkList />
-  </div>
-  {/if}
-  {#if page === '/annotated'}
-  <div class="card">
-    <AnnotatedFile />
   </div>
   {/if}
 </main>

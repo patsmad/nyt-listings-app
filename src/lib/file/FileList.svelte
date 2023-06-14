@@ -1,12 +1,14 @@
 <script>
 import { onMount } from "svelte";
 import { writable, derived } from "svelte/store";
-import { annotatedFileData } from '../annotated/annotated.js';
+import { annotatedFileData } from './annotated.js';
 import FileItemTable from './FileItemTable.svelte';
+import AnnotatedFile from './AnnotatedFile.svelte';
 
 let img_src;
 let files = writable([]);
-let display_table = false;
+let display = false;
+let display_table = true;
 
 let urlParams = new URLSearchParams(window.location.search);
 let selected = urlParams.get('file_id');
@@ -27,7 +29,7 @@ function handleSelected() {
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
     img_src = 'http://localhost:5000/img/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY
-    display_table = true;
+    display = true;
 }
 </script>
 
@@ -43,9 +45,19 @@ function handleSelected() {
     {:else}
     <button disabled>Submit</button>
     {/if}
-    {#if display_table}
+    <div>
+        <button on:click={() => display_table = !display_table}>
+            {#if display_table}Annotation{:else}Table{/if}
+        </button>
+    </div>
+    {#if display && display_table}
     <div class="card">
         <FileItemTable img_src={img_src} selected={selected} />
+    </div>
+    {/if}
+    {#if display && !display_table}
+    <div class="card">
+        <AnnotatedFile img_src={img_src} selected={selected} />
     </div>
     {/if}
 </main>
