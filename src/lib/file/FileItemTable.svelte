@@ -1,7 +1,8 @@
 <script>
 import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
-import { annotatedFileData, annotatedFile, FileItem } from './file.js';
+import { annotatedFileData, annotatedFile } from '../annotated/annotated.js'
+import { FileItem } from './file.js';
 
 export let img_src;
 export let selected;
