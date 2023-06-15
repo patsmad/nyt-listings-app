@@ -7,13 +7,15 @@ export let selected;
 let img;
 let original_width;
 let new_width;
+let display_img = false;
 
 function loadImg() {
-    original_width = img.width;
-    new_width = 1500;
+    if (img) {
+        original_width = img.width;
+        new_width = 1500;
+        display_img = true;
+    }
 }
-
-$: console.log(original_width, img?.x, img?.y, img?.height, img?.width);
 
 </script>
 
@@ -24,19 +26,19 @@ $: console.log(original_width, img?.x, img?.y, img?.height, img?.width);
             bind:this={img}
             src={img_src}
             alt="Annotated file for file id {selected}"
-            on:dblclick={(mouse) => console.log(mouse.offsetX, mouse.offsetY, mouse.x, mouse.y, img?.x, img?.y)}
             on:load={loadImg}
          />
         {#each $fileItems as fileItem}
             <button class="box" style="
                       position: absolute;
-                      left: {img?.x + fileItem.top * new_width / original_width}px;
-                      top: {img?.y + fileItem.left * new_width / original_width}px;
-                      width: {fileItem.width * new_width / original_width}px;
-                      height: {fileItem.height * new_width / original_width}px;
+                      left: { img?.offsetLeft + fileItem.top * new_width / original_width - 1 }px;
+                      top: { img?.offsetTop + fileItem.left * new_width / original_width - 1 }px;
+                      width: {fileItem.width * new_width / original_width + 2}px;
+                      height: {fileItem.height * new_width / original_width + 2}px;
                       border-color: #ff0000;
                       background-color: transparent;
-                      border-width: 3px;
+                      border-width: 2px;
+                      border-radius: 0px;
                       color: #000000"
             >
             </button>
@@ -45,8 +47,8 @@ $: console.log(original_width, img?.x, img?.y, img?.height, img?.width);
                       position: absolute;
                       color: #ff0000;
                       transform: translate(-50%, -50%);
-                      left: {img?.x + fileItem.x * new_width / original_width}px;
-                      top: {img?.y + fileItem.y * new_width / original_width}px"
+                      left: { img?.offsetLeft + fileItem.x * new_width / original_width }px;
+                      top: { img?.offsetTop + fileItem.y * new_width / original_width }px"
             >&#9733;</div>
         {/each}
     </div>
