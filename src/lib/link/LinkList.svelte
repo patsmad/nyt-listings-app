@@ -28,7 +28,7 @@ function handleSelected()  {
     {/if}
     {#if display_table}
     <div class="card">
-        <LinkTable />
+        <LinkTable selected={selected}/>
     </div>
     {/if}
 </main>

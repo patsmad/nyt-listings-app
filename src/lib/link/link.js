@@ -20,6 +20,7 @@ export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
                 link_file.width,
                 link_file.height,
                 link_file.link_id,
+                $linkFilesData.link_info?.link,
                 link_file.confirmed
             )
         })
@@ -44,7 +45,7 @@ class LinkInfo {
 }
 
 class LinkFile {
-    constructor(file_id, file, box_id, left, top, width, height, link_id, confirmed) {
+    constructor(file_id, file, box_id, left, top, width, height, link_id, link, confirmed) {
         this.file_id = file_id;
         this.file = file;
         this.box_id = box_id;
@@ -53,6 +54,7 @@ class LinkFile {
         this.width = width;
         this.height = height;
         this.link_id = link_id;
+        this.link = link;
         this.confirmed = confirmed;
     }
 
