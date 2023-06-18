@@ -134,7 +134,7 @@ async function deleteItem(item_id) {
                 <button class="x" on:click={deleteItem(fileItem.id)}>X</button>
                 {/if}
             </td>
-            <td><input type="checkbox" id="confirmed-{fileItem.id}" bind:checked={fileItem.confirmed} on:click={updateConfirmed(fileItem.link_id, fileItem.confirmed)}></td>
+            <td><input type="checkbox" bind:checked={fileItem.confirmed} on:click={updateConfirmed(fileItem.link_id, fileItem.confirmed)}></td>
             <td style="max-width: 400px; height: {fileItem.scale(400) * fileItem.height}px">
                 {#if fileItem.height}
                 <img src={img_src} style="
