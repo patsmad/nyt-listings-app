@@ -119,7 +119,7 @@ async function updateConfirmed(link_id, confirmed) {
                 " alt="Snippet for {linkFile.title} ({linkFile.file})"/>
                 {/if}
             </td>
-            <td><input type="checkbox" checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}></td>
+            <td><input type="checkbox" bind:checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}></td>
             <td on:dblclick={linkEditable(linkFile.link, index)}>
             {#if index != editable}
             <a href={linkFile.link} target="_blank">
