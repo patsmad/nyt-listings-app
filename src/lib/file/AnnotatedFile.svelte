@@ -31,8 +31,8 @@ function loadImg() {
         {#each $fileItems as fileItem}
             <button class="box" style="
                       position: absolute;
-                      left: { img?.offsetLeft + fileItem.top * new_width / original_width - 1 }px;
-                      top: { img?.offsetTop + fileItem.left * new_width / original_width - 1 }px;
+                      left: { img?.offsetLeft + fileItem.left * new_width / original_width - 1 }px;
+                      top: { img?.offsetTop + fileItem.top * new_width / original_width - 1 }px;
                       width: {fileItem.width * new_width / original_width + 2}px;
                       height: {fileItem.height * new_width / original_width + 2}px;
                       border-color: #ff0000;

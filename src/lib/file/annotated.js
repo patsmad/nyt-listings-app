@@ -40,10 +40,10 @@ class Link {
 }
 
 class Box {
-  constructor(id, top, left, width, height, links) {
+  constructor(id, left, top, width, height, links) {
     this.id = id;
-    this.top = top;
     this.left = left;
+    this.top = top;
     this.width = width;
     this.height = height;
     this.links = links;

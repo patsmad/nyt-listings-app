@@ -176,7 +176,7 @@ async function updateBox(box_id) {
                     width: {fileItem.width}px;
                     height: {fileItem.height}px;
                     object-fit: none;
-                    object-position: -{fileItem.top}px -{fileItem.left}px;
+                    object-position: -{fileItem.left}px -{fileItem.top}px;
                     scale: {fileItem.scale()};
                     translate: -{fileItem.translation()}px 0px;
                 " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
@@ -190,7 +190,7 @@ async function updateBox(box_id) {
                         width: {new_box.width()}px;
                         height: {new_box.height()}px;
                         object-fit: none;
-                        object-position: -{old_box.top + (new_box.left - old_box.left)}px -{old_box.left + (new_box.top - old_box.top)}px;
+                        object-position: -{old_box.left + (new_box.left - old_box.left)}px -{old_box.top + (new_box.top - old_box.top)}px;
                         scale: {new_box.scale()};
                         translate: -{new_box.translation()}px 0px;
                     " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
@@ -200,8 +200,8 @@ async function updateBox(box_id) {
                               position: absolute;
                               color: #ff0000;
                               transform: translate(-50%, -50%);
-                              left: { (fileItem.x - old_box.top - (new_box.left - old_box.left)) * new_box.scale() }px;
-                              top: { (fileItem.y - old_box.left - (new_box.top - old_box.top)) * new_box.scale() }px"
+                              left: { (fileItem.x - new_box.left) * new_box.scale() }px;
+                              top: { (fileItem.y - new_box.top) * new_box.scale() }px"
                     >&#9733;</div>
                 </div>
                 <div style="height: {100 * 50 / (old_box.scaled_height() + 100)}%; position: relative">
