@@ -31,15 +31,52 @@ export class FileItem {
         this.link_edit = false;
     }
 
-    scale(target) {
-        return target / this.width;
+    scale() {
+        return 400 / this.width;
     }
 
-    translation(target) {
-        if (this.scale(target) <= 1) {
-            return (this.width - target) / 2;
-        } else {
-            return 0;
-        }
+    translation() {
+        return (this.width - 400) / 2;
+    }
+
+    box() {
+        return new Box(this.left, this.top, this.left + this.width, this.top + this.height);
+    }
+}
+
+class Box {
+    constructor(left, top, right, bottom) {
+        this.left = left;
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
+    }
+
+    width() {
+        return this.right - this.left;
+    }
+
+    height() {
+        return this.bottom - this.top;
+    }
+
+    scale() {
+        return 400 / this.width();
+    }
+
+    scaled_height() {
+        return this.height() * this.scale();
+    }
+
+    scaled_width() {
+        return this.width() * this.scale();
+    }
+
+    translation() {
+        return (this.width() - 400) / 2;
+    }
+
+    match(other) {
+        return this.left == other.left && this.top == other.top && this.right == other.right && this.bottom == other.bottom;
     }
 }
