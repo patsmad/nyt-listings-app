@@ -109,13 +109,13 @@ async function updateConfirmed(link_id, confirmed) {
         <tr>
             <td>{linkFile.link_id}</td>
             <td><a href="/file?file_id={linkFile.file_id}">{linkFile.file}</a></td>
-            <td style="max-width: 400px; height: {linkFile.scale(400) * linkFile.height}px">
+            <td style="max-width: 400px; min-width: 400px; height: {linkFile.scale(400, linkFile.width) * linkFile.height}px">
                 {#if linkFile.height}
                 <img src={getImgSrc(linkFile)} style="
                     width: {linkFile.width}px;
                     height: {linkFile.height}px;
-                    scale: {linkFile.scale(400)};
-                    translate: -{linkFile.translation(400)}px 0px;
+                    scale: {linkFile.scale(400, linkFile.width)};
+                    translate: -{linkFile.translation(400, linkFile.width)}px 0px;
                 " alt="Snippet for {linkFile.title} ({linkFile.file})"/>
                 {/if}
             </td>

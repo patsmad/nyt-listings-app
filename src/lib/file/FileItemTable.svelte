@@ -43,7 +43,6 @@ async function updateConfirmed(link_id, confirmed) {
     sortedFileItems = sortFileItems();
 }
 
-let deletable=-1
 let editable=-1;
 let new_value='';
 let old_value='';
@@ -92,6 +91,8 @@ async function addLink(box_id) {
     new_value = '';
     old_value = '';
 }
+
+let deletable=-1
 function itemDeletable(index) {
     return () => deletable = index;
 }
@@ -107,6 +108,38 @@ async function deleteItem(item_id) {
         .then(data => annotatedFileData.set(data))
     sortedFileItems = sortFileItems();
     deletable = -1;
+}
+
+let editable_box=-1;
+let new_box = [];
+let old_box = [];
+function boxEditable(fileItem, index) {
+    return () => {
+        editable_box = index;
+        new_box = fileItem.box();
+        old_box = fileItem.box();
+    }
+}
+async function updateBox(box_id) {
+    if (!new_box.match(old_box)) {
+        await fetch('http://localhost:5000/box/update?api_key=' + import.meta.env.VITE_API_KEY, {
+            method: 'POST',
+            body: JSON.stringify({
+                'id': box_id,
+                'left': new_box.left,
+                'top': new_box.top,
+                'width': new_box.width(),
+                'height': new_box.height()
+            })
+        })
+        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+            .then(response => response.json())
+            .then(data => annotatedFileData.set(data))
+        sortedFileItems = sortFileItems();
+    }
+    editable_box = -1;
+    new_value = [];
+    old_value = [];
 }
 </script>
 
@@ -135,18 +168,57 @@ async function deleteItem(item_id) {
                 {/if}
             </td>
             <td><input type="checkbox" bind:checked={fileItem.confirmed} on:click={updateConfirmed(fileItem.link_id, fileItem.confirmed)}></td>
-            <td style="max-width: 400px; height: {fileItem.scale(400) * fileItem.height}px">
-                {#if fileItem.height}
+            {#if index != editable_box}
+            <td style="max-width: 400px; width: 400px; height: {fileItem.scale() * fileItem.height + 50}px; max-height: {fileItem.scale() * fileItem.height + 50}px;"
+                on:dblclick={boxEditable(fileItem, index)}
+            >
                 <img src={img_src} style="
                     width: {fileItem.width}px;
                     height: {fileItem.height}px;
                     object-fit: none;
                     object-position: -{fileItem.top}px -{fileItem.left}px;
-                    scale: {fileItem.scale(400)};
-                    translate: -{fileItem.translation(400)}px 0px;
+                    scale: {fileItem.scale()};
+                    translate: -{fileItem.translation()}px 0px;
                 " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
-                {/if}
             </td>
+            {:else}
+            <td style="height: {old_box.scaled_height() + 100}px; max-width: 400px; width: 400px;">
+                <div style="height: {100 * old_box.scaled_height() / (old_box.scaled_height() + 100)}%;
+                position: relative;">
+                    <div style="position: absolute; top: 0px;">
+                    <img src={img_src} style="
+                        width: {new_box.width()}px;
+                        height: {new_box.height()}px;
+                        object-fit: none;
+                        object-position: -{old_box.top + (new_box.left - old_box.left)}px -{old_box.left + (new_box.top - old_box.top)}px;
+                        scale: {new_box.scale()};
+                        translate: -{new_box.translation()}px 0px;
+                    " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
+                    </div>
+                    <div class="item"
+                         style="
+                              position: absolute;
+                              color: #ff0000;
+                              transform: translate(-50%, -50%);
+                              left: { (fileItem.x - old_box.top - (new_box.left - old_box.left)) * new_box.scale() }px;
+                              top: { (fileItem.y - old_box.left - (new_box.top - old_box.top)) * new_box.scale() }px"
+                    >&#9733;</div>
+                </div>
+                <div style="height: {100 * 50 / (old_box.scaled_height() + 100)}%; position: relative">
+                    <div style="height: 25px;  width: 400px; position: absolute; bottom: 0px;">
+                        Left: <input type="range" min="{old_box.left - 100}" max="{old_box.right}" bind:value={new_box.left} />
+                        Right: <input type="range" min="{old_box.left}" max="{old_box.right + 100}" bind:value={new_box.right} />
+                    </div>
+                </div>
+                <div style="height: {100 * 50 / (old_box.scaled_height() + 100)}%; position: relative">
+                    <div style="height: 25px;  width: 400px; position: absolute; bottom: 0px;">
+                        Top: <input type="range" min="{old_box.top - 100}" max="{old_box.bottom}" bind:value={new_box.top} />
+                        Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom + 100}" bind:value={new_box.bottom} />
+                    </div>
+                </div>
+                <button on:click={updateBox(fileItem.box_id)}>Submit</button>
+            </td>
+            {/if}
             <td><a href='/link?link_id={fileItem.link}'>{fileItem.title}</a></td>
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>
