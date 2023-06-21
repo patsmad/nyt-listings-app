@@ -143,6 +143,7 @@ async function updateBox(box_id) {
 }
 </script>
 
+<div>Count: {$sortedFileItems?.length}</div>
 <table class="file-item-table">
     <thead>
         <tr>
@@ -169,7 +170,7 @@ async function updateBox(box_id) {
             </td>
             <td><input type="checkbox" bind:checked={fileItem.confirmed} on:click={updateConfirmed(fileItem.link_id, fileItem.confirmed)}></td>
             {#if index != editable_box}
-            <td style="max-width: 400px; width: 400px; height: {fileItem.scale() * fileItem.height + 50}px; max-height: {fileItem.scale() * fileItem.height + 50}px;"
+            <td class="snippet" style="height: {fileItem.scale() * fileItem.height + 50}px;"
                 on:dblclick={boxEditable(fileItem, index)}
             >
                 <img src={img_src} style="
@@ -182,17 +183,16 @@ async function updateBox(box_id) {
                 " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
             </td>
             {:else}
-            <td style="height: {old_box.scaled_height() + 100}px; max-width: 400px; width: 400px;">
-                <div style="height: {100 * old_box.scaled_height() / (old_box.scaled_height() + 100)}%;
-                position: relative;">
+            <td class="snippet" style="height: {new_box.largest_height() + 150}px;">
+                <div class="snippet" style="height: {new_box.largest_height()}px; position: relative; top: 0px;">
                     <div style="position: absolute; top: 0px;">
                     <img src={img_src} style="
                         width: {new_box.width()}px;
                         height: {new_box.height()}px;
                         object-fit: none;
-                        object-position: -{old_box.left + (new_box.left - old_box.left)}px -{old_box.top + (new_box.top - old_box.top)}px;
+                        object-position: -{new_box.left}px -{new_box.top}px;
                         scale: {new_box.scale()};
-                        translate: -{new_box.translation()}px 0px;
+                        translate: {new_box.translation()}px {(new_box.largest_height() - new_box.height()) / 2}px;
                     " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
                     </div>
                     <div class="item"
@@ -200,23 +200,27 @@ async function updateBox(box_id) {
                               position: absolute;
                               color: #ff0000;
                               transform: translate(-50%, -50%);
-                              left: { (fileItem.x - new_box.left) * new_box.scale() }px;
-                              top: { (fileItem.y - new_box.top) * new_box.scale() }px"
+                              left: { (fileItem.x - new_box.left) * new_box.scale()}px;
+                              top: { (fileItem.y - new_box.top) * new_box.scale() + (new_box.height() * (1 - new_box.scale())) / 2 + (new_box.largest_height() - new_box.height()) / 2 }px"
                     >&#9733;</div>
                 </div>
-                <div style="height: {100 * 50 / (old_box.scaled_height() + 100)}%; position: relative">
-                    <div style="height: 25px;  width: 400px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative;">
+                    <div style="max-height: 50px;  width: 400px; position: absolute; bottom: 0px;">
                         Left: <input type="range" min="{old_box.left - 100}" max="{old_box.right}" bind:value={new_box.left} />
                         Right: <input type="range" min="{old_box.left}" max="{old_box.right + 100}" bind:value={new_box.right} />
                     </div>
                 </div>
-                <div style="height: {100 * 50 / (old_box.scaled_height() + 100)}%; position: relative">
-                    <div style="height: 25px;  width: 400px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative;">
+                    <div style="max-height: 50px;  width: 400px; position: absolute; bottom: 0px;">
                         Top: <input type="range" min="{old_box.top - 100}" max="{old_box.bottom}" bind:value={new_box.top} />
                         Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom + 100}" bind:value={new_box.bottom} />
                     </div>
                 </div>
-                <button on:click={updateBox(fileItem.box_id)}>Submit</button>
+                <div class="snippet" style="height: 50px; position: relative;">
+                    <div style="height: 50px;  width: 400px; position: absolute; bottom: 0px;">
+                        <button on:click={updateBox(fileItem.box_id)}>Submit</button>
+                    </div>
+                </div>
             </td>
             {/if}
             <td><a href='/link?link_id={fileItem.link}'>{fileItem.title}</a></td>
@@ -290,5 +294,13 @@ th {
     background-color: #ff5248;
     cursor: pointer;
     transition: border-color 0.25s;
+}
+.snippet {
+    min-width: 400px;
+    max-width: 400px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    patting-bottom: 0px;
 }
 </style>

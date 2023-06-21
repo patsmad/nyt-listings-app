@@ -36,7 +36,11 @@ export class FileItem {
     }
 
     translation() {
-        return (this.width - 400) / 2;
+        if (this.scale() < 1) {
+            return (this.width - 400) / 2;
+        } else {
+            return 0;
+        }
     }
 
     box() {
@@ -73,10 +77,18 @@ class Box {
     }
 
     translation() {
-        return (this.width() - 400) / 2;
+        return -(this.width() - 400) / 2;
     }
 
     match(other) {
         return this.left == other.left && this.top == other.top && this.right == other.right && this.bottom == other.bottom;
+    }
+
+    largest_height() {
+        if (this.scale() < 1) {
+            return this.height();
+        } else {
+            return this.scaled_height();
+        }
     }
 }
