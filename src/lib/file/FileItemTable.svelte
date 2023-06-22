@@ -2,7 +2,7 @@
 import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { annotatedFileData } from './annotated.js'
-import { fileItems } from './file.js';
+import { fileItems, snippet_target } from './file.js';
 
 export let img_src;
 export let selected;
@@ -170,7 +170,7 @@ async function updateBox(box_id) {
             </td>
             <td><input type="checkbox" bind:checked={fileItem.confirmed} on:click={updateConfirmed(fileItem.link_id, fileItem.confirmed)}></td>
             {#if index != editable_box}
-            <td class="snippet" style="height: {fileItem.scale() * fileItem.height + 50}px;"
+            <td class="snippet" style="height: {fileItem.scale() * fileItem.height}px; min-width: {snippet_target}px; max-width: {snippet_target}px;"
                 on:dblclick={boxEditable(fileItem, index)}
             >
                 <img src={img_src} style="
@@ -183,8 +183,8 @@ async function updateBox(box_id) {
                 " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
             </td>
             {:else}
-            <td class="snippet" style="height: {new_box.largest_height() + 150}px;">
-                <div class="snippet" style="height: {new_box.largest_height()}px; position: relative; top: 0px;">
+            <td class="snippet" style="height: {new_box.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
+                <div class="snippet" style="height: {new_box.largest_height()}px; position: relative; top: 0px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
                     <div style="position: absolute; top: 0px;">
                     <img src={img_src} style="
                         width: {new_box.width()}px;
@@ -204,20 +204,20 @@ async function updateBox(box_id) {
                               top: { (fileItem.y - new_box.top) * new_box.scale() + (new_box.height() * (1 - new_box.scale())) / 2 + (new_box.largest_height() - new_box.height()) / 2 }px"
                     >&#9733;</div>
                 </div>
-                <div class="snippet" style="height: 50px; position: relative;">
-                    <div style="max-height: 50px;  width: 400px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
+                    <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
                         Left: <input type="range" min="{old_box.left - 100}" max="{old_box.right}" bind:value={new_box.left} />
                         Right: <input type="range" min="{old_box.left}" max="{old_box.right + 100}" bind:value={new_box.right} />
                     </div>
                 </div>
-                <div class="snippet" style="height: 50px; position: relative;">
-                    <div style="max-height: 50px;  width: 400px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
+                    <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
                         Top: <input type="range" min="{old_box.top - 100}" max="{old_box.bottom}" bind:value={new_box.top} />
                         Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom + 100}" bind:value={new_box.bottom} />
                     </div>
                 </div>
-                <div class="snippet" style="height: 50px; position: relative;">
-                    <div style="height: 50px;  width: 400px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
+                    <div style="height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
                         <button on:click={updateBox(fileItem.box_id)}>Submit</button>
                     </div>
                 </div>
@@ -296,11 +296,9 @@ th {
     transition: border-color 0.25s;
 }
 .snippet {
-    min-width: 400px;
-    max-width: 400px;
     padding-left: 0px;
     padding-right: 0px;
     padding-top: 0px;
-    patting-bottom: 0px;
+    padding-bottom: 0px;
 }
 </style>
