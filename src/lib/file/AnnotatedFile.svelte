@@ -1,4 +1,5 @@
 <script>
+import { annotatedFileData } from './annotated.js';
 import { fileItems } from './file.js';
 
 export let img_src;
@@ -17,6 +18,20 @@ function loadImg() {
     }
 }
 
+async function addItem(mouse) {
+    await fetch('http://localhost:5000/item/add?api_key=' + import.meta.env.VITE_API_KEY, {
+        method: 'POST',
+        body: JSON.stringify({
+            'file_id': selected,
+            'x': parseInt(mouse.offsetX * original_height / new_height),
+            'y': parseInt(mouse.offsetY * original_height / new_height)
+        })
+    })
+    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        .then(response => response.json())
+        .then(data => annotatedFileData.set(data))
+}
+
 </script>
 
 <main>
@@ -27,6 +42,7 @@ function loadImg() {
             src={img_src}
             alt="Annotated file for file id {selected}"
             on:load={loadImg}
+            on:dblclick={(mouse) => addItem(mouse)}
          />
         {#each $fileItems as fileItem}
             <button class="box" style="

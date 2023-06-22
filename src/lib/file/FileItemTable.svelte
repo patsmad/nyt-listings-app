@@ -141,6 +141,27 @@ async function updateBox(box_id) {
     new_value = [];
     old_value = [];
 }
+async function addBox(item_id) {
+    if (!new_box.match(old_box)) {
+        await fetch('http://localhost:5000/box/add?api_key=' + import.meta.env.VITE_API_KEY, {
+            method: 'POST',
+            body: JSON.stringify({
+                'item_id': item_id,
+                'left': new_box.left,
+                'top': new_box.top,
+                'width': new_box.width(),
+                'height': new_box.height()
+            })
+        })
+        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+            .then(response => response.json())
+            .then(data => annotatedFileData.set(data))
+        sortedFileItems = sortFileItems();
+    }
+    editable_box = -1;
+    new_value = [];
+    old_value = [];
+}
 </script>
 
 <div>Count: {$sortedFileItems?.length}</div>
@@ -218,7 +239,11 @@ async function updateBox(box_id) {
                 </div>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
                     <div style="height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                        {#if fileItem.box_id}
                         <button on:click={updateBox(fileItem.box_id)}>Submit</button>
+                        {:else}
+                        <button on:click={addBox(fileItem.id)}>Submit</button>
+                        {/if}
                     </div>
                 </div>
             </td>

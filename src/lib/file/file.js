@@ -8,7 +8,7 @@ export const fileItems = derived(annotatedFile, annotatedFile => annotatedFile.i
         })
         return links.length > 0 ? links : [new FileItem(item.id, item.x, item.y, box.id, box.left, box.top, box.width, box.height, null, '', '', '', null, null, false)]
     })
-    return boxes.length > 0 ? boxes : [new FileItem(item.id, item.x, item.y, null, null, null, null, null, null, '', '', '', null, null, false)]
+    return boxes.length > 0 ? boxes : [new FileItem(item.id, item.x, item.y, null, item.x - 100, item.y - 100, 200, 200, null, '', '', '', null, null, false)]
 }).flat(2))
 
 export const snippet_target = 400;
