@@ -11,6 +11,8 @@ export const fileItems = derived(annotatedFile, annotatedFile => annotatedFile.i
     return boxes.length > 0 ? boxes : [new FileItem(item.id, item.x, item.y, null, null, null, null, null, null, '', '', '', null, null, false)]
 }).flat(2))
 
+export const snippet_target = 400;
+
 export class FileItem {
     constructor(id, x, y, box_id, left, top, width, height, link_id, link, title, year, rating, votes, confirmed) {
         this.id = id;
@@ -32,12 +34,12 @@ export class FileItem {
     }
 
     scale() {
-        return 400 / this.width;
+        return snippet_target / this.width;
     }
 
     translation() {
         if (this.scale() < 1) {
-            return (this.width - 400) / 2;
+            return (this.width - snippet_target) / 2;
         } else {
             return 0;
         }
@@ -65,7 +67,7 @@ class Box {
     }
 
     scale() {
-        return 400 / this.width();
+        return snippet_target / this.width();
     }
 
     scaled_height() {
@@ -77,7 +79,7 @@ class Box {
     }
 
     translation() {
-        return -(this.width() - 400) / 2;
+        return -(this.width() - snippet_target) / 2;
     }
 
     match(other) {

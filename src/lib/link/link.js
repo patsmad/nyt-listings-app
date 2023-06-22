@@ -14,6 +14,9 @@ export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
             return new LinkFile(
                 link_file.file_id,
                 link_file.file,
+                link_file.item_id,
+                link_file.x,
+                link_file.y,
                 link_file.box_id,
                 link_file.left,
                 link_file.top,
@@ -44,10 +47,15 @@ class LinkInfo {
     }
 }
 
+export const snippet_target = 400;
+
 class LinkFile {
-    constructor(file_id, file, box_id, left, top, width, height, link_id, link, confirmed) {
+    constructor(file_id, file, item_id, x, y, box_id, left, top, width, height, link_id, link, confirmed) {
         this.file_id = file_id;
         this.file = file;
+        this.item_id = item_id;
+        this.x = x;
+        this.y = y;
         this.box_id = box_id;
         this.left = left;
         this.top = top;
@@ -58,15 +66,64 @@ class LinkFile {
         this.confirmed = confirmed;
     }
 
-    scale(target) {
-        return target / this.width;
+    scale() {
+        return snippet_target / this.width;
     }
 
-    translation(target) {
-        if (this.scale(target) <= 1) {
-            return (this.width - target) / 2;
+    translation() {
+        if (this.scale() <= 1) {
+            return (this.width - snippet_target) / 2;
         } else {
             return 0;
+        }
+    }
+
+    box() {
+        return new Box(this.left, this.top, this.left + this.width, this.top + this.height);
+    }
+}
+
+class Box {
+    constructor(left, top, right, bottom) {
+        this.left = left;
+        this.top = top;
+        this.right = right;
+        this.bottom = bottom;
+    }
+
+    width() {
+        return this.right - this.left;
+    }
+
+    height() {
+        return this.bottom - this.top;
+    }
+
+    scale() {
+        return snippet_target / this.width();
+    }
+
+    scaled_height() {
+        return this.height() * this.scale();
+    }
+
+    scaled_width() {
+        return this.width() * this.scale();
+    }
+
+    translation() {
+        return -(this.width() - snippet_target) / 2;
+    }
+
+    match(other) {
+        return this.left == other.left && this.top == other.top && this.right == other.right && this.bottom == other.bottom;
+    }
+
+    largest_height() {
+        if (this.scale() < 1) {
+            return this.height();
+        } else {
+            return this.scaled_height();
         }
     }
 }
