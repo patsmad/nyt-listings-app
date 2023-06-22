@@ -195,7 +195,7 @@ async function updateBox(box_id) {
                               color: #ff0000;
                               transform: translate(-50%, -50%);
                               left: { (linkFile.x - new_box.left) * new_box.scale() }px;
-                              top: { (linkFile.y - new_box.top) * new_box.scale() }px"
+                              top: { (linkFile.y - new_box.top) * new_box.scale() + (new_box.height() * (1 - new_box.scale())) / 2 + (new_box.largest_height() - new_box.height()) / 2}px"
                     >&#9733;</div>
                 </div>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
