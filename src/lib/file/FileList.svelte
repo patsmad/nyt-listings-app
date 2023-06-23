@@ -8,7 +8,7 @@ import AnnotatedFile from './AnnotatedFile.svelte';
 let img_src;
 let files = writable([]);
 let display = false;
-let display_table = true;
+let display_table = window.location.hash != '#annotation';
 
 let urlParams = new URLSearchParams(window.location.search);
 let selected = urlParams.get('file_id');
@@ -41,24 +41,35 @@ function handleSelected() {
         {/each}
     </select>
     {#if selected}
-    <a href="/file?file_id={selected}"><button>Submit</button></a>
+    <a href="/file?file_id={selected}{display_table ? '' : '#annotation'}"><button>Submit</button></a>
     {:else}
     <button disabled>Submit</button>
     {/if}
+    {#if display}
     <div>
+        {#if selected > 1}
+        <a href="/file?file_id={selected - 1}{display_table ? '' : '#annotation'}"><button>&lt;</button></a>
+        {:else}
+        <button disabled>&lt;</button>
+        {/if}
         <button on:click={() => display_table = !display_table}>
             {#if display_table}Annotation{:else}Table{/if}
         </button>
+        {#if selected < $files.length}
+        <a href="/file?file_id={selected + 1}{display_table ? '' : '#annotation'}"><button>&gt;</button></a>
+        {:else}
+        <button disabled>&gt;</button>
+        {/if}
     </div>
-    {#if display && display_table}
+    {#if display_table}
     <div class="card">
         <FileItemTable img_src={img_src} selected={selected} />
     </div>
-    {/if}
-    {#if display && !display_table}
+    {:else}
     <div class="card">
         <AnnotatedFile img_src={img_src} selected={selected} />
     </div>
+    {/if}
     {/if}
 </main>
 

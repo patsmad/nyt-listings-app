@@ -35,6 +35,7 @@ async function addItem(mouse) {
 </script>
 
 <main>
+    {#if $fileItems}
     <div>
         <img class="annotated-file"
             style="height: {new_height}px;"
@@ -52,7 +53,7 @@ async function addItem(mouse) {
                       width: {fileItem.width * new_height / original_height + 2}px;
                       height: {fileItem.height * new_height / original_height + 2}px;
                       border-color: #ff0000;
-                      background-color: transparent;
+                      background: rgba(142, 52, 30, 0.5);
                       border-width: 2px;
                       border-radius: 0px;
                       color: #000000"
@@ -68,6 +69,7 @@ async function addItem(mouse) {
             >&#9733;</div>
         {/each}
     </div>
+    {/if}
 </main>
 
 <style>

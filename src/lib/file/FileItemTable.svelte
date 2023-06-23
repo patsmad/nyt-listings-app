@@ -227,8 +227,8 @@ async function addBox(item_id) {
                 </div>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
                     <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
-                        Left: <input type="range" min="{old_box.left - 100}" max="{old_box.right}" bind:value={new_box.left} />
-                        Right: <input type="range" min="{old_box.left}" max="{old_box.right + 100}" bind:value={new_box.right} />
+                        Left: <input type="range" min="{old_box.left - 500}" max="{old_box.right}" bind:value={new_box.left} />
+                        Right: <input type="range" min="{old_box.left}" max="{old_box.right + 500}" bind:value={new_box.right} />
                     </div>
                 </div>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
