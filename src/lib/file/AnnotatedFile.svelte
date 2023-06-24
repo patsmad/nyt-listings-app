@@ -46,7 +46,7 @@ async function addItem(mouse) {
             on:dblclick={(mouse) => addItem(mouse)}
          />
         {#each $fileItems as fileItem}
-            <button class="box" style="
+            <div class="box" style="
                       position: absolute;
                       left: { img?.offsetLeft + fileItem.left * new_height / original_height - 1 }px;
                       top: { img?.offsetTop + fileItem.top * new_height / original_height - 1 }px;
@@ -58,7 +58,7 @@ async function addItem(mouse) {
                       border-radius: 0px;
                       color: #000000"
             >
-            </button>
+            </div>
             <div class="item"
                  style="
                       position: absolute;
@@ -73,4 +73,7 @@ async function addItem(mouse) {
 </main>
 
 <style>
+.box {
+    cursor: pointer;
+}
 </style>
