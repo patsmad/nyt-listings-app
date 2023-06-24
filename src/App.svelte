@@ -8,14 +8,14 @@
 </script>
 
 <main>
-  <div class="heading">
-    <div>
+  <span class="heading" style="width: 55%; margin: 0 auto;">
+    <div style="width: 25%;">
       <a href="https://www.badmovietwins.com" target="_blank" rel="noreferrer">
         <img src={bmtLogo} class="logo bmt" alt="BMT Logo" />
       </a>
     </div>
-    <h1>BMT / New York Times</h1>
-  </div>
+    <h1 style="width: 75%;">BMT / New York Times</h1>
+  </span>
   <span class="mean">
   <a class="btn" href="/file"><button>File Search</button></a>
   <a class="btn" href="/link"><button>Link Search</button></a>
@@ -35,8 +35,7 @@
 
 <style>
   .logo {
-    height: 6em;
-    padding: 1.5em;
+    height: 100px;
     will-change: filter;
     transition: filter 300ms;
   }
