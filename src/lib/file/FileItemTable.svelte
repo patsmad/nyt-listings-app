@@ -194,14 +194,24 @@ async function addBox(item_id) {
             <td class="snippet" style="height: {fileItem.scale() * fileItem.height}px; min-width: {snippet_target}px; max-width: {snippet_target}px;"
                 on:dblclick={boxEditable(fileItem, index)}
             >
-                <img src={img_src} style="
-                    width: {fileItem.width}px;
-                    height: {fileItem.height}px;
-                    object-fit: none;
-                    object-position: -{fileItem.left}px -{fileItem.top}px;
-                    scale: {fileItem.scale()};
-                    translate: -{fileItem.translation()}px 0px;
-                " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
+                <div class="snippet" style="height: {fileItem.height}px; position: relative; top: 0px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
+                    <img src={img_src} style="
+                        width: {fileItem.width}px;
+                        height: {fileItem.height}px;
+                        object-fit: none;
+                        object-position: -{fileItem.left}px -{fileItem.top}px;
+                        scale: {fileItem.scale()};
+                        translate: -{fileItem.translation()}px 0px;
+                    " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
+                    <div class="item"
+                         style="
+                              position: absolute;
+                              color: #ff0000;
+                              transform: translate(-50%, -50%);
+                              left: { (fileItem.x - fileItem.left) * fileItem.scale() }px;
+                              top: { (fileItem.y - fileItem.top) * fileItem.scale() + (fileItem.height * (1 - fileItem.scale())) / 2}px"
+                    >&#9733;</div>
+                </div>
             </td>
             {:else}
             <td class="snippet" style="height: {new_box.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px;">

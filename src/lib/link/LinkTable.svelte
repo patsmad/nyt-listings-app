@@ -169,12 +169,22 @@ async function updateBox(box_id) {
             <td class="snippet" style="height: {linkFile.scale() * linkFile.height}px; min-width: {snippet_target}px; max-width: {snippet_target}px;"
                 on:dblclick={boxEditable(linkFile, index)}
             >
-                <img src={getImgSrc(linkFile)} style="
-                    width: {linkFile.width}px;
-                    height: {linkFile.height}px;
-                    scale: {linkFile.scale()};
-                    translate: -{linkFile.translation()}px 0px;
-                " alt="Snippet for {linkFile.title} ({linkFile.file})"/>
+                <div class="snippet" style="height: {linkFile.height}px; position: relative; top: 0px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
+                    <img src={getImgSrc(linkFile)} style="
+                        width: {linkFile.width}px;
+                        height: {linkFile.height}px;
+                        scale: {linkFile.scale()};
+                        translate: -{linkFile.translation()}px 0px;
+                    " alt="Snippet for {linkFile.title} ({linkFile.file})"/>
+                    <div class="item"
+                         style="
+                              position: absolute;
+                              color: #ff0000;
+                              transform: translate(-50%, -50%);
+                              left: { (linkFile.x - linkFile.left) * linkFile.scale() }px;
+                              top: { (linkFile.y - linkFile.top) * linkFile.scale() + (linkFile.height * (1 - linkFile.scale())) / 2}px"
+                    >&#9733;</div>
+                </div>
             </td>
             {:else}
             <td class="snippet" style="height: {new_box.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px;">

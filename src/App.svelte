@@ -8,7 +8,7 @@
 </script>
 
 <main>
-  <span class="heading" style="width: 55%; margin: 0 auto;">
+  <span class="heading">
     <div style="width: 25%;">
       <a href="https://www.badmovietwins.com" target="_blank" rel="noreferrer">
         <img src={bmtLogo} class="logo bmt" alt="BMT Logo" />
@@ -45,5 +45,7 @@
   .heading {
     display: flex;
     justify-content: space-between;
+    width: 825px;
+    margin: 0 auto;
   }
 </style>
