@@ -7,6 +7,14 @@ import AnnotatedFile from './AnnotatedFile.svelte';
 
 let img_src;
 let files = writable([]);
+let sortedFiles = derived(
+    files,
+    files => files?.sort((fileA, fileB) => {
+        if (fileA.name > fileB.name) { return 1; }
+        if (fileA.name < fileB.name) { return -1; }
+        return 0;
+    })
+);
 let display = false;
 let display_table = window.location.hash != '#annotation';
 
@@ -19,24 +27,26 @@ if (selected) {
 
 onMount(async () => {
     annotatedFileData.set([]);
-    fetch('http://localhost:5000/files/?api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch('http://localhost:5000/files/?api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => files.set(data))
 });
 
-function handleSelected() {
-    fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+let selectedFileIndex;
+async function handleSelected() {
+    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
     img_src = 'http://localhost:5000/img/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY
     display = true;
+    selectedFileIndex = $sortedFiles.findIndex(file => file.id == selected);
 }
 </script>
 
 <main>
 	<h2>Select a file:</h2>
     <select class='file-select' bind:value={selected}>
-        {#each $files as file}
+        {#each $sortedFiles as file}
         <option value={file.id}>{file.name}</option>
         {/each}
     </select>
@@ -47,16 +57,16 @@ function handleSelected() {
     {/if}
     {#if display}
     <div>
-        {#if selected > 1}
-        <a href="/file?file_id={selected - 1}{display_table ? '' : '#annotation'}"><button>&lt;</button></a>
+        {#if selectedFileIndex > 1}
+        <a href="/file?file_id={$sortedFiles[selectedFileIndex - 1].id}{display_table ? '' : '#annotation'}"><button>&lt;</button></a>
         {:else}
         <button disabled>&lt;</button>
         {/if}
         <button on:click={() => display_table = !display_table}>
             {#if display_table}Annotation{:else}Table{/if}
         </button>
-        {#if selected < $files.length}
-        <a href="/file?file_id={selected + 1}{display_table ? '' : '#annotation'}"><button>&gt;</button></a>
+        {#if selectedFileIndex < $sortedFiles.length}
+        <a href="/file?file_id={$sortedFiles[selectedFileIndex + 1].id}{display_table ? '' : '#annotation'}"><button>&gt;</button></a>
         {:else}
         <button disabled>&gt;</button>
         {/if}
