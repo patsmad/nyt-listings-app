@@ -126,8 +126,8 @@ async function updateBox(box_id) {
         sortedLinkList = sortLinkList();
     }
     editable_box = -1;
-    new_value = [];
-    old_value = [];
+    new_box = [];
+    old_box = [];
 }
 </script>
 
