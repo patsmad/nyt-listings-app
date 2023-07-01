@@ -81,7 +81,6 @@ let new_link='';
 let old_link='';
 function linkEditable(value) {
     return () => {
-        console.log(value);
         editable = true;
         new_link = value;
         old_link = value;
@@ -128,7 +127,6 @@ async function addLink(box_id) {
 let dialog;
 let modalFileItem;
 let modalPosterLink;
-let modalOpen = false;
 function openModal(fileItem) {
     modalFileItem = fileItem;
     modalPosterLink = 'http://localhost:5000/poster/?link=' + fileItem.link + '&api_key=' + import.meta.env.VITE_API_KEY
