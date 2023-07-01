@@ -126,8 +126,8 @@ async function updateBox(box_id) {
         sortedLinkList = sortLinkList();
     }
     editable_box = -1;
-    new_value = [];
-    old_value = [];
+    new_box = [];
+    old_box = [];
 }
 </script>
 
@@ -179,11 +179,15 @@ async function updateBox(box_id) {
                     <div class="item"
                          style="
                               position: absolute;
-                              color: #ff0000;
                               transform: translate(-50%, -50%);
                               left: { (linkFile.x - linkFile.left) * linkFile.scale() }px;
-                              top: { (linkFile.y - linkFile.top) * linkFile.scale() + (linkFile.height * (1 - linkFile.scale())) / 2}px"
-                    >&#9733;</div>
+                              top: { (linkFile.y - linkFile.top) * linkFile.scale() + (linkFile.height * (1 - linkFile.scale())) / 2}px;
+                              width: 10px;
+                              height: 10px;
+                              background: rgba(183, 52, 30, 0.75);
+                              border-radius: 5px;
+                              color: #000000"
+                    ></div>
                 </div>
             </td>
             {:else}
@@ -202,11 +206,15 @@ async function updateBox(box_id) {
                     <div class="item"
                          style="
                               position: absolute;
-                              color: #ff0000;
                               transform: translate(-50%, -50%);
                               left: { (linkFile.x - new_box.left) * new_box.scale() }px;
-                              top: { (linkFile.y - new_box.top) * new_box.scale() + (new_box.height() * (1 - new_box.scale())) / 2 + (new_box.largest_height() - new_box.height()) / 2}px"
-                    >&#9733;</div>
+                              top: { (linkFile.y - new_box.top) * new_box.scale() + (new_box.height() * (1 - new_box.scale())) / 2 + (new_box.largest_height() - new_box.height()) / 2}px;
+                              width: 10px;
+                              height: 10px;
+                              background: rgba(183, 52, 30, 0.75);
+                              border-radius: 5px;
+                              color: #000000"
+                    ></div>
                 </div>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
                     <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
