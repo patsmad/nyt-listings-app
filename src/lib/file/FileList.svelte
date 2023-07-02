@@ -45,9 +45,9 @@ async function handleSelected() {
 
 <main>
 	<h2>Select a file:</h2>
-    <select class='file-select' bind:value={selected}>
-        {#each $sortedFiles as file}
-        <option value={file.id}>{file.name}</option>
+    <select id="file-select" class='file-select' bind:value={selected}>
+        {#each $sortedFiles as file, index}
+        <option id="file-{index}" value={file.id}>{file.name}</option>
         {/each}
     </select>
     {#if selected}

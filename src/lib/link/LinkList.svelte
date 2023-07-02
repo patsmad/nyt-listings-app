@@ -20,7 +20,7 @@ function handleSelected()  {
 
 <main>
 	<h2>Input a link:</h2>
-    <input class='link-select' bind:value={selected} />
+    <input id="link-input" class='link-select' bind:value={selected} />
     {#if selected}
     <a href="/link?link_id={selected}"><button>Submit</button></a>
     {:else}

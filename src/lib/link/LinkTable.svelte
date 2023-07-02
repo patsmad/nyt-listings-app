@@ -236,7 +236,7 @@ async function updateBox(box_id) {
             </td>
             {/if}
             {/if}
-            <td><input type="checkbox" bind:checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}></td>
+            <td><input id="confirmed-{index}" type="checkbox" bind:checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}></td>
             <td on:dblclick={linkEditable(linkFile.link, index)}>
             {#if index != editable}
             <a href={linkFile.link} target="_blank">
@@ -244,7 +244,7 @@ async function updateBox(box_id) {
             </a>
             {:else}
             <form on:submit|preventDefault={(e) => updateLink(linkFile.link_id)}>
-                <input bind:value={new_value} />
+                <input id="new_link_update" bind:value={new_value} />
             </form>
             {/if}
             </td>

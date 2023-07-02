@@ -168,7 +168,7 @@ async function updateBox(box_id) {
                 <button class="x" on:click={deleteItem(fileItem.id)}>X</button>
                 {/if}
             </td>
-            <td><input type="checkbox" bind:checked={fileItem.confirmed} on:click={updateConfirmed(fileItem.link_id, fileItem.confirmed)}></td>
+            <td><input id="confirmed-{index}" type="checkbox" bind:checked={fileItem.confirmed} on:click={updateConfirmed(fileItem.link_id, fileItem.confirmed)}></td>
             {#if index != editable_box}
             <td class="snippet" style="height: {fileItem.scale() * fileItem.height}px; min-width: {snippet_target}px; max-width: {snippet_target}px;"
                 on:dblclick={boxEditable(fileItem, index)}
@@ -255,11 +255,11 @@ async function updateBox(box_id) {
             {:else}
             {#if fileItem.link_id}
             <form on:submit|preventDefault={(e) => updateLink(fileItem.link_id)}>
-                <input bind:value={new_value} />
+                <input id="new_link_update" bind:value={new_value} />
             </form>
             {:else}
             <form on:submit|preventDefault={(e) => addLink(fileItem.box_id)}>
-                <input bind:value={new_value} />
+                <input id="new_link_add" bind:value={new_value} />
             </form>
             {/if}
             {/if}
