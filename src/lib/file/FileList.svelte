@@ -57,7 +57,7 @@ async function handleSelected() {
     {/if}
     {#if display}
     <div>
-        {#if selectedFileIndex > 1}
+        {#if selectedFileIndex > 0}
         <a href="/file?file_id={$sortedFiles[selectedFileIndex - 1].id}{display_table ? '' : '#annotation'}"><button>&lt;</button></a>
         {:else}
         <button disabled>&lt;</button>
@@ -65,7 +65,7 @@ async function handleSelected() {
         <button on:click={() => display_table = !display_table}>
             {#if display_table}Annotation{:else}Table{/if}
         </button>
-        {#if selectedFileIndex < $sortedFiles.length}
+        {#if selectedFileIndex < $sortedFiles.length - 1}
         <a href="/file?file_id={$sortedFiles[selectedFileIndex + 1].id}{display_table ? '' : '#annotation'}"><button>&gt;</button></a>
         {:else}
         <button disabled>&gt;</button>
