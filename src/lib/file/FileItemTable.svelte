@@ -150,6 +150,10 @@ async function updateBox(box_id) {
             <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.id, 'id')}>ID</th>
             <th class="isSortable {active === 'confirmed' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.confirmed, 'confirmed')}>Confirmed</th>
             <th>Snippet</th>
+            <th class="isSortable {active === 'channel' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.channel, 'channel')}>Channel</th>
+            <th class="isSortable {active === 'time' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.time, 'time')}>Time</th>
+            <th class="isSortable {active === 'duration' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.duration_minutes, 'duration')}>Duration (min.)</th>
+            <th class="isSortable {active === 'vcr_code' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.vcr_code, 'vcr_code')}>VCR Code</th>
             <th class="isSortable {active === 'title' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.title, 'title')}>Title</th>
             <th class="isSortable {active === 'year' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.year, 'year')}>Year</th>
             <th class="isSortable {active === 'rating' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.rating, 'rating')}>Rating</th>
@@ -241,6 +245,9 @@ async function updateBox(box_id) {
                 </div>
             </td>
             {/if}
+            <td>{fileItem.channel}</td>
+            <td>{fileItem.time}</td>
+            <td>{fileItem.duration_minutes}</td>
             <td><a href='/link?link_id={fileItem.link}'>{fileItem.title}</a></td>
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>

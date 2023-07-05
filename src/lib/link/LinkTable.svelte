@@ -148,6 +148,10 @@ async function updateBox(box_id) {
             <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.id, 'id')}>ID</th>
             <th class="isSortable {active === 'file' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.file, 'file')}>File</th>
             <th>Snippet</th>
+            <th class="isSortable {active === 'channel' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.channel, 'channel')}>Channel</th>
+            <th class="isSortable {active === 'time' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.time, 'time')}>Time</th>
+            <th class="isSortable {active === 'duration' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.duration_minutes, 'duration')}>Duration (min.)</th>
+            <th class="isSortable {active === 'vcr_code' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.vcr_code, 'vcr_code')}>VCR Code</th>
             <th class="isSortable {active === 'confirmed' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.confirmed, 'confirmed')}>Confirmed</th>
             <th>Link</th>
         </tr>
@@ -236,6 +240,10 @@ async function updateBox(box_id) {
             </td>
             {/if}
             {/if}
+            <td>{linkFile.channel}</td>
+            <td>{linkFile.time}</td>
+            <td>{linkFile.duration_minutes}</td>
+            <td>{linkFile.vcr_code}</td>
             <td><input id="confirmed-{index}" type="checkbox" bind:checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}></td>
             <td on:dblclick={linkEditable(linkFile.link, index)}>
             {#if index != editable}

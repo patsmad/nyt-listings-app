@@ -22,6 +22,10 @@ export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
                 link_file.top,
                 link_file.width,
                 link_file.height,
+                link_file.channel,
+                link_file.time,
+                link_file.duration_minutes,
+                link_file.vcr_code,
                 link_file.link_id,
                 $linkFilesData.link_info?.link,
                 link_file.confirmed
@@ -50,7 +54,7 @@ class LinkInfo {
 export const snippet_target = 400;
 
 class LinkFile {
-    constructor(file_id, file, item_id, x, y, box_id, left, top, width, height, link_id, link, confirmed) {
+    constructor(file_id, file, item_id, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, confirmed) {
         this.file_id = file_id;
         this.file = file;
         this.item_id = item_id;
@@ -61,6 +65,10 @@ class LinkFile {
         this.top = top;
         this.width = width;
         this.height = height;
+        this.channel = channel;
+        this.time = time;
+        this.duration_minutes = duration_minutes;
+        this.vcr_code = vcr_code;
         this.link_id = link_id;
         this.link = link;
         this.confirmed = confirmed;
