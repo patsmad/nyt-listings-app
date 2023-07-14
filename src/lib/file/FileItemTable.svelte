@@ -12,11 +12,11 @@ let active = 'id';
 let sortFnc = item => item.id;
 let sortFileItems = () => derived(
     fileItems,
-    fileItems => fileItems?.sort((itemA, itemB) => {
+    fileItems => fileItems?.filter(item => sortFnc(item) !== null).sort((itemA, itemB) => {
             if (sortFnc(itemA) > sortFnc(itemB)) { return -1 + 2 * asc; }
             if (sortFnc(itemA) < sortFnc(itemB)) { return 1 - 2 * asc; }
         return 0;
-    })
+    }).concat(fileItems?.filter(item => sortFnc(item) === null))
 );
 let sortedFileItems = sortFileItems();
 
@@ -141,6 +141,40 @@ async function updateBox(box_id) {
     new_box = [];
     old_box = [];
 }
+
+let vcr_code_editable = -1;
+let new_vcr_code = '';
+let old_vcr_code = '';
+function VCRCodeEditable(vcr_code, index) {
+    return () => {
+        vcr_code_editable = index;
+        new_vcr_code = vcr_code;
+        old_vcr_code = vcr_code;
+    }
+}
+async function updateVCRCode(box_id, file_date) {
+    let date = new Date(file_date)
+    date = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/London'}));
+    if (new_vcr_code != old_vcr_code) {
+        await fetch('http://localhost:5000/vcr_code/update?api_key=' + import.meta.env.VITE_API_KEY, {
+            method: 'POST',
+            body: JSON.stringify({
+                'id': box_id,
+                'year': date.getFullYear(),
+                'month': date.getMonth() + 1,
+                'day': date.getDate(),
+                'vcr_code': new_vcr_code
+            })
+        })
+        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+            .then(response => response.json())
+            .then(data => annotatedFileData.set(data))
+        sortedFileItems = sortFileItems();
+    }
+    vcr_code_editable = -1;
+    new_vcr_code = '';
+    old_vcr_code = '';
+}
 </script>
 
 <div>Count: {$sortedFileItems?.length}</div>
@@ -248,6 +282,15 @@ async function updateBox(box_id) {
             <td>{fileItem.channel}</td>
             <td>{fileItem.time}</td>
             <td>{fileItem.duration_minutes}</td>
+            <td on:dblclick={VCRCodeEditable(fileItem.vcr_code, index)}>
+                {#if index != vcr_code_editable}
+                {fileItem.vcr_code}
+                {:else}
+                <form on:submit|preventDefault={(e) => updateVCRCode(fileItem.box_id, fileItem.file_date)}>
+                    <input id="vcr_code_update" bind:value={new_vcr_code} />
+                </form>
+                {/if}
+            </td>
             <td><a href='/link?link_id={fileItem.link}'>{fileItem.title}</a></td>
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>

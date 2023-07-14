@@ -71,8 +71,6 @@ async function updateBox(box_id) {
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
     }
-    new_box = null;
-    old_box = null;
     closeModal();
 }
 
@@ -100,9 +98,7 @@ async function updateLink(link_id) {
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
     }
-    editable = false;
-    new_link = '';
-    old_link = '';
+    closeModal();
 }
 async function addLink(box_id) {
     if (new_link != '') {
@@ -118,9 +114,37 @@ async function addLink(box_id) {
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
     }
-    editable = false;
-    new_link = '';
-    old_link = '';
+    closeModal();
+}
+
+let vcr_code_editable = false;
+let new_vcr_code = '';
+let old_vcr_code = '';
+function VCRCodeEditable(vcr_code) {
+    return () => {
+        vcr_code_editable = true;
+        new_vcr_code = vcr_code;
+        old_vcr_code = vcr_code;
+    }
+}
+async function updateVCRCode(box_id, file_date) {
+    let date = new Date(file_date)
+    date = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/London'}));
+    if (new_vcr_code != old_vcr_code) {
+        await fetch('http://localhost:5000/vcr_code/update?api_key=' + import.meta.env.VITE_API_KEY, {
+            method: 'POST',
+            body: JSON.stringify({
+                'id': box_id,
+                'year': date.getFullYear(),
+                'month': date.getMonth() + 1,
+                'day': date.getDate(),
+                'vcr_code': new_vcr_code
+            })
+        })
+        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+            .then(response => response.json())
+            .then(data => annotatedFileData.set(data))
+    }
     closeModal();
 }
 
@@ -135,6 +159,14 @@ function openModal(fileItem) {
     dialog.showModal();
 }
 function closeModal() {
+    vcr_code_editable = false;
+    new_vcr_code = '';
+    old_vcr_code = '';
+    editable = false;
+    new_link = '';
+    old_link = '';
+    new_box = null;
+    old_box = null;
     dialog.close();
 }
 </script>
@@ -150,7 +182,7 @@ function closeModal() {
             on:load={loadImg}
             on:dblclick={(mouse) => addItem(mouse)}
          />
-        <dialog bind:this={dialog} on:click|self={() => closeModal()} on:keypress={() => closeModal()}>
+        <dialog bind:this={dialog} on:click|self={() => closeModal()} on:keypress={(e) => console.log(e)}>
             {#if new_box}
             <div class="snippet" style="height: {new_box?.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px; display: inline-block;">
                 <a href={modalFileItem?.link} target="_blank">
@@ -171,10 +203,31 @@ function closeModal() {
                 </form>
                 {/if}
                 {/if}
-                <div style="width: 400px;"><b>Title: </b><a href="/link?link_id={modalFileItem?.link}" target="_blank">{modalFileItem?.title}</a></div>
-                <div style="width: 400px;"><b>Year: </b>{modalFileItem?.year}</div>
-                <div style="width: 400px;"><b>Rating: </b>{modalFileItem?.rating}</div>
-                <div style="width: 400px;"><b>Votes: </b>{modalFileItem?.votes}</div>
+                <div style="width: 400px;">
+                    <div style="width: 200px; display: inline-block;" align="left"><b>Title: </b><a href="/link?link_id={modalFileItem?.link}" target="_blank">{modalFileItem?.title}</a></div>
+                    <div style="width: 150px; display: inline-block;" align="left"><b>Channel: </b>{modalFileItem?.channel}</div>
+                </div>
+                <div style="width: 400px;">
+                    <div style="width: 200px; display: inline-block;" align="left"><b>Year: </b>{modalFileItem?.year}</div>
+                    <div style="width: 150px; display: inline-block;" align="left"><b>Time: </b>{modalFileItem?.time}</div>
+                </div>
+                <div style="width: 400px;">
+                    <div style="width: 200px; display: inline-block;" align="left"><b>Rating: </b>{modalFileItem?.rating}</div>
+                    <div style="width: 150px; display: inline-block;" align="left"><b>Duration: </b>{modalFileItem?.duration_minutes}</div>
+                </div>
+                <div style="width: 400px;">
+                    <div style="width: 200px; display: inline-block;" align="left"><b>Votes: </b>{modalFileItem?.votes}</div>
+                    <div style="width: 150px; display: inline-block;" align="left" on:dblclick={VCRCodeEditable(modalFileItem?.vcr_code)}>
+                        <b>VCR Code: </b>
+                        {#if !vcr_code_editable}
+                        {modalFileItem?.vcr_code}
+                        {:else}
+                        <form on:submit|preventDefault={(e) => updateVCRCode(modalFileItem?.box_id, modalFileItem?.file_date)}>
+                            <input id="vcr_code_update" bind:value={new_vcr_code} />
+                        </form>
+                        {/if}
+                    </div>
+                </div>
                 {#if !deletable}
                 <button class="x" on:click={() => deletable = true}>Delete Item</button>
                 {:else}
@@ -238,7 +291,7 @@ function closeModal() {
                       top: { img?.offsetTop + fileItem.y * new_height / original_height }px;
                       width: 10px;
                       height: 10px;
-                      background: { fileItem.link == '' ? 'rgba(17, 123, 183, 0.35)' : 'rgba(183, 52, 30, 0.5)' };
+                      background: { fileItem.link == '' ? 'rgba(17, 123, 183, 0.35)'  : 'rgba(183, 52, 30, 0.5)' };
                       border-radius: 5px;
                       color: #000000"
             ></div>
@@ -248,7 +301,7 @@ function closeModal() {
                       top: { img?.offsetTop + fileItem.top * new_height / original_height - 1 }px;
                       width: {fileItem.width * new_height / original_height + 2}px;
                       height: {fileItem.height * new_height / original_height + 2}px;
-                      background: {fileItem.link == '' ? 'rgba(183, 52, 30, 0.5)' : 'rgba(17, 123, 183, 0.35)' };
+                      background: {fileItem.link == '' ? 'rgba(183, 52, 30, 0.5)' : (fileItem.vcr_code === null ? 'rgb(223, 203, 90, 0.30)' : 'rgba(17, 123, 183, 0.35)') };
                       border-radius: 0px;
                       padding-top: 0px;
                       padding-bottom: 0px;

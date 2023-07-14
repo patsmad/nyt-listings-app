@@ -14,6 +14,7 @@ export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
             return new LinkFile(
                 link_file.file_id,
                 link_file.file,
+                link_file.file_date,
                 link_file.item_id,
                 link_file.x,
                 link_file.y,
@@ -54,9 +55,10 @@ class LinkInfo {
 export const snippet_target = 400;
 
 class LinkFile {
-    constructor(file_id, file, item_id, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, confirmed) {
+    constructor(file_id, file, file_date, item_id, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, confirmed) {
         this.file_id = file_id;
         this.file = file;
+        this.file_date = file_date;
         this.item_id = item_id;
         this.x = x;
         this.y = y;
@@ -88,6 +90,16 @@ class LinkFile {
 
     box() {
         return new Box(this.left, this.top, this.left + this.width, this.top + this.height);
+    }
+
+    time_as_decimal() {
+        if (this.time !== null) {
+            let date = new Date(this.time)
+            date = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/London'}));
+            return date.getHours() + date.getMinutes() / 60;
+        } else {
+            return null;
+        }
     }
 }
 
