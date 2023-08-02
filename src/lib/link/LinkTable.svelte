@@ -130,6 +130,104 @@ async function updateBox(box_id) {
     old_box = [];
 }
 
+let channel_editable = -1;
+let new_channel = '';
+let old_channel = '';
+function ChannelEditable(channel, index) {
+    return () => {
+        channel_editable = index;
+        new_channel = channel;
+        old_channel = channel;
+    }
+}
+async function updateChannel(box_id) {
+    if (new_channel != old_channel) {
+        await fetch('http://localhost:5000/channel/update?api_key=' + import.meta.env.VITE_API_KEY, {
+            method: 'POST',
+            body: JSON.stringify({
+                'id': box_id,
+                'channel': new_channel
+            })
+        })
+        await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+            .then(response => response.json())
+            .then(data => linkFilesData.set(data))
+        sortedLinkList = sortLinkList();
+    }
+    channel_editable = -1;
+    new_channel = '';
+    old_channel = '';
+}
+
+let time_editable = -1;
+let new_time = '';
+let old_time = '';
+function TimeEditable(time, file_date, index) {
+    return () => {
+        time_editable = index;
+        if (time != null) {
+            new_time = time;
+            old_time = time;
+        } else {
+            new_time = file_date;
+            old_time = time;
+        }
+    }
+}
+async function updateTime(box_id) {
+    if (new_time != old_time) {
+        let date = new Date(new_time);
+        date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
+        await fetch('http://localhost:5000/time/update?api_key=' + import.meta.env.VITE_API_KEY, {
+            method: 'POST',
+            body: JSON.stringify({
+                'id': box_id,
+                'year': date.getFullYear(),
+                'month': date.getMonth() + 1,
+                'day': date.getDate(),
+                'hour': date.getHours(),
+                'minute': date.getMinutes()
+            })
+        })
+        await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+            .then(response => response.json())
+            .then(data => linkFilesData.set(data))
+        sortedLinkList = sortLinkList();
+    }
+    time_editable = -1;
+    new_time = '';
+    old_time = '';
+}
+
+let duration_editable = -1;
+let new_duration = '';
+let old_duration = '';
+function DurationEditable(duration, index) {
+    return () => {
+        duration_editable = index;
+        new_duration = duration;
+        old_duration = duration;
+    }
+}
+async function updateDuration(box_id) {
+    if (new_duration != old_duration) {
+        await fetch('http://localhost:5000/duration/update?api_key=' + import.meta.env.VITE_API_KEY, {
+            method: 'POST',
+            body: JSON.stringify({
+                'id': box_id,
+                'duration': new_duration
+            })
+        })
+        await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+            .then(response => response.json())
+            .then(data => linkFilesData.set(data))
+        sortedLinkList = sortLinkList();
+    }
+    duration_editable = -1;
+    new_duration = '';
+    old_duration = '';
+}
+
 let vcr_code_editable = -1;
 let new_vcr_code = '';
 let old_vcr_code = '';
@@ -142,7 +240,7 @@ function VCRCodeEditable(vcr_code, index) {
 }
 async function updateVCRCode(box_id, file_date) {
     let date = new Date(file_date)
-    date = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/London'}));
+    date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
     if (new_vcr_code != old_vcr_code) {
         await fetch('http://localhost:5000/vcr_code/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
@@ -273,9 +371,33 @@ async function updateVCRCode(box_id, file_date) {
                 </div>
             </td>
             {/if}
-            <td>{linkFile.channel}</td>
-            <td>{linkFile.time}</td>
-            <td>{linkFile.duration_minutes}</td>
+            <td on:dblclick={ChannelEditable(linkFile.channel, index)}>
+                {#if index != channel_editable}
+                {linkFile.channel}
+                {:else}
+                <form on:submit|preventDefault={(e) => updateChannel(linkFile.box_id)}>
+                    <input id="channel_update" bind:value={new_channel} />
+                </form>
+                {/if}
+            </td>
+            <td on:dblclick={TimeEditable(linkFile.time, linkFile.file_date, index)}>
+                {#if index != time_editable}
+                {linkFile.time}
+                {:else}
+                <form on:submit|preventDefault={(e) => updateTime(linkFile.box_id)}>
+                    <input id="time_update" bind:value={new_time} />
+                </form>
+                {/if}
+            </td>
+            <td on:dblclick={DurationEditable(linkFile.duration_minutes, index)}>
+                {#if index != duration_editable}
+                {linkFile.duration_minutes}
+                {:else}
+                <form on:submit|preventDefault={(e) => updateDuration(linkFile.box_id)}>
+                    <input id="duration_update" bind:value={new_duration} />
+                </form>
+                {/if}
+            </td>
             <td on:dblclick={VCRCodeEditable(linkFile.vcr_code, index)}>
                 {#if index != vcr_code_editable}
                 {linkFile.vcr_code}
