@@ -57,8 +57,7 @@ export class FileItem {
     time_as_decimal() {
         if (this.time !== null) {
             let date = new Date(this.time)
-            date = new Date(date.toLocaleString('en-US', {timeZone: 'Europe/London'}));
-            return date.getHours() + date.getMinutes() / 60;
+            return date.getTime()
         } else {
             return null;
         }
