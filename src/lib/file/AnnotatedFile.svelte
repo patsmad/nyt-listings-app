@@ -1,6 +1,7 @@
 <script>
 import { annotatedFileData } from './annotated.js';
 import { fileItems, snippet_target } from './file.js';
+import Channel from '../update/Channel.svelte';
 
 export let img_src;
 export let selected;
@@ -147,29 +148,10 @@ async function updateVCRCode(box_id, file_date) {
     closeModal();
 }
 
-let channel_editable = false;
-let new_channel = '';
-let old_channel = '';
-function ChannelEditable(channel) {
-    return () => {
-        channel_editable = true;
-        new_channel = channel;
-        old_channel = channel;
-    }
-}
-async function updateChannel(box_id) {
-    if (new_channel != old_channel) {
-        await fetch('http://localhost:5000/channel/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'channel': new_channel
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
+async function closeOut() {
+    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        .then(response => response.json())
+        .then(data => annotatedFileData.set(data))
     closeModal();
 }
 
@@ -249,7 +231,6 @@ function openModal(fileItem) {
 function closeModal() {
     editable = false;
     vcr_code_editable = false;
-    channel_editable = false;
     time_editable = false;
     duration_editable = false;
     deletable = false;
@@ -259,8 +240,6 @@ function closeModal() {
     old_link = '';
     new_time = '';
     old_time = '';
-    new_channel = '';
-    old_channel = '';
     new_duration = '';
     old_duration = '';
     new_box = null;
@@ -303,15 +282,8 @@ function closeModal() {
                 {/if}
                 <div style="width: 400px;">
                     <div style="width: 200px; display: inline-block;" align="left"><b>Title: </b><a href="/link?link_id={modalFileItem?.link}" target="_blank">{modalFileItem?.title}</a></div>
-                    <div style="width: 150px; display: inline-block;" align="left" on:dblclick={ChannelEditable(modalFileItem?.channel)}>
-                        <b>Channel: </b>
-                        {#if !channel_editable}
-                        {modalFileItem?.channel}
-                        {:else}
-                        <form on:submit|preventDefault={(e) => updateChannel(modalFileItem?.box_id)}>
-                            <input id="channel_update" bind:value={new_channel} />
-                        </form>
-                        {/if}
+                    <div style="width: 150px; display: inline-block;" align="left">
+                        <Channel closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
                 <div style="width: 400px;">

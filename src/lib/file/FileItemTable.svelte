@@ -3,6 +3,7 @@ import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { annotatedFileData } from './annotated.js'
 import { fileItems, snippet_target } from './file.js';
+import Channel from '../update/Channel.svelte';
 
 export let img_src;
 export let selected;
@@ -142,33 +143,11 @@ async function updateBox(box_id) {
     old_box = [];
 }
 
-let channel_editable = -1;
-let new_channel = '';
-let old_channel = '';
-function ChannelEditable(channel, index) {
-    return () => {
-        channel_editable = index;
-        new_channel = channel;
-        old_channel = channel;
-    }
-}
-async function updateChannel(box_id) {
-    if (new_channel != old_channel) {
-        await fetch('http://localhost:5000/channel/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'channel': new_channel
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-        sortedFileItems = sortFileItems();
-    }
-    channel_editable = -1;
-    new_channel = '';
-    old_channel = '';
+async function closeOut() {
+    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        .then(response => response.json())
+        .then(data => annotatedFileData.set(data))
+    sortedFileItems = sortFileItems();
 }
 
 let time_editable = -1;
@@ -377,14 +356,8 @@ async function updateVCRCode(box_id, file_date) {
                 </div>
             </td>
             {/if}
-            <td on:dblclick={ChannelEditable(fileItem.channel, index)}>
-                {#if index != channel_editable}
-                {fileItem.channel}
-                {:else}
-                <form on:submit|preventDefault={(e) => updateChannel(fileItem.box_id)}>
-                    <input id="channel_update" bind:value={new_channel} />
-                </form>
-                {/if}
+            <td>
+                <Channel closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             </td>
             <td on:dblclick={TimeEditable(fileItem.time, fileItem.file_date, index)}>
                 {#if index != time_editable}
