@@ -1,5 +1,4 @@
 <script>
-import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { annotatedFileData } from './annotated.js'
 import { fileItems, snippet_target } from './file.js';
@@ -7,6 +6,7 @@ import Channel from '../update/Channel.svelte';
 import Time from '../update/Time.svelte';
 import Duration from '../update/Duration.svelte';
 import VCRCode from '../update/VCRCode.svelte';
+import Link from '../update/Link.svelte';
 
 export let img_src;
 export let selected;
@@ -45,55 +45,6 @@ async function updateConfirmed(link_id, confirmed) {
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
     sortedFileItems = sortFileItems();
-}
-
-let editable=-1;
-let new_value='';
-let old_value='';
-function linkEditable(value, index) {
-    return () => {
-        editable = index;
-        new_value = value;
-        old_value = value;
-    }
-}
-async function updateLink(link_id) {
-    if (new_value != old_value) {
-        await fetch('http://localhost:5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': link_id,
-                'link': new_value,
-                'confirmed': true
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-        sortedFileItems = sortFileItems();
-    }
-    editable = -1;
-    new_value = '';
-    old_value = '';
-}
-async function addLink(box_id) {
-    if (new_value != '') {
-        await fetch('http://localhost:5000/link/add?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'box_id': box_id,
-                'link': new_value,
-                'confirmed': true
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-        sortedFileItems = sortFileItems();
-    }
-    editable = -1;
-    new_value = '';
-    old_value = '';
 }
 
 let deletable=-1
@@ -273,25 +224,7 @@ async function closeOut() {
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>
             <td>{fileItem.votes}</td>
-            <td on:dblclick={linkEditable(fileItem.link, index)}>
-            {#if index != editable}
-                {#if fileItem.link}
-                <a href={fileItem.link} target="_blank">
-                    <img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" />
-                </a>
-                {/if}
-            {:else}
-            {#if fileItem.link_id}
-            <form on:submit|preventDefault={(e) => updateLink(fileItem.link_id)}>
-                <input id="new_link_update" bind:value={new_value} />
-            </form>
-            {:else}
-            <form on:submit|preventDefault={(e) => addLink(fileItem.box_id)}>
-                <input id="new_link_add" bind:value={new_value} />
-            </form>
-            {/if}
-            {/if}
-            </td>
+            <Link closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
         </tr>
         {/each}
     {/if}
@@ -309,7 +242,10 @@ th, td {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+}
+
+td {
+    background-color: #1a1a1a;
 }
 
 th {
@@ -319,17 +255,17 @@ th {
 .isSortable {
     cursor: pointer;
 }
+
 .isActive.asc:after {
     content: "▼";
     padding-left: 5px;
 }
+
 .isActive.desc:after {
     content: "▲";
     padding-left: 5px;
 }
-.imdb-logo {
-    height: 32px;
-}
+
 .x {
 	border-radius: 8px;
     border: 1px solid transparent;
@@ -341,10 +277,12 @@ th {
     cursor: pointer;
     transition: border-color 0.25s;
 }
+
 .snippet {
     padding-left: 0px;
     padding-right: 0px;
     padding-top: 0px;
     padding-bottom: 0px;
 }
+
 </style>
