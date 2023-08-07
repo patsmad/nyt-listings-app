@@ -5,6 +5,7 @@ import Channel from '../update/Channel.svelte';
 import Time from '../update/Time.svelte';
 import Duration from '../update/Duration.svelte';
 import VCRCode from '../update/VCRCode.svelte';
+import Link from '../update/Link.svelte';
 
 export let img_src;
 export let selected;
@@ -77,49 +78,6 @@ async function updateBox(box_id) {
     closeModal();
 }
 
-let editable=false;
-let new_link='';
-let old_link='';
-function linkEditable(value) {
-    return () => {
-        editable = true;
-        new_link = value;
-        old_link = value;
-    }
-}
-async function updateLink(link_id) {
-    if (new_link != old_link) {
-        await fetch('http://localhost:5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': link_id,
-                'link': new_link,
-                'confirmed': true
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
-    closeModal();
-}
-async function addLink(box_id) {
-    if (new_link != '') {
-        await fetch('http://localhost:5000/link/add?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'box_id': box_id,
-                'link': new_link,
-                'confirmed': true
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
-    closeModal();
-}
-
 async function closeOut() {
     await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
@@ -137,11 +95,9 @@ function openModal(fileItem) {
     old_box = fileItem.box();
     dialog.showModal();
 }
+
 function closeModal() {
-    editable = false;
     deletable = false;
-    new_link = '';
-    old_link = '';
     new_box = null;
     old_box = null;
     dialog.close();
@@ -162,24 +118,16 @@ function closeModal() {
         <dialog bind:this={dialog} on:click|self={() => closeModal()} on:keypress={(e) => null}>
             {#if new_box}
             <div class="snippet" style="height: {new_box?.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px; display: inline-block;">
-                <a href={modalFileItem?.link} target="_blank">
+                {#if modalFileItem?.link}
+                    <a href={modalFileItem?.link} target="_blank">
+                        <img src={modalPosterLink} alt="Poster for {modalFileItem.title} ({modalFileItem.year})"/>
+                    </a>
+                {:else}
                     <img src={modalPosterLink} alt="Poster for {modalFileItem.title} ({modalFileItem.year})"/>
-                </a>
-                {#if !editable}
-                <div style="width: 400px;" on:dblclick={linkEditable(modalFileItem?.link)}>
-                    <b>Link: </b><a href={modalFileItem?.link} target="_blank">{modalFileItem?.link}</a>
+                {/if}
+                <div style="width: 400px;">
+                    <Link closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                 </div>
-                {:else}
-                {#if modalFileItem?.link_id}
-                <form on:submit|preventDefault={(e) => updateLink(modalFileItem?.link_id)}>
-                    <input bind:value={new_link} />
-                </form>
-                {:else}
-                <form on:submit|preventDefault={(e) => addLink(modalFileItem?.box_id)}>
-                    <input bind:value={new_link} />
-                </form>
-                {/if}
-                {/if}
                 <div style="width: 400px;">
                     <div style="width: 200px; display: inline-block;" align="left">
                         <b>Title: </b><a href="/link?link_id={modalFileItem?.link}" target="_blank">{modalFileItem?.title}</a>

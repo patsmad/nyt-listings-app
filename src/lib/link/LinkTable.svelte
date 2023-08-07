@@ -6,6 +6,7 @@ import Channel from '../update/Channel.svelte';
 import Time from '../update/Time.svelte';
 import Duration from '../update/Duration.svelte';
 import VCRCode from '../update/VCRCode.svelte';
+import Link from '../update/Link.svelte';
 
 export let selected;
 
@@ -40,37 +41,6 @@ function getImgSrc(linkFile) {
         '&box=' + linkFile.left + ',' + linkFile.top + ',' + linkFile.width + ',' + linkFile.height
 }
 
-let deletable=-1
-let editable=-1;
-let new_value='';
-let old_value='';
-function linkEditable(value, index) {
-    return () => {
-        editable = index;
-        new_value = value;
-        old_value = value;
-    }
-}
-async function updateLink(link_id) {
-    if (new_value != old_value) {
-        await fetch('http://localhost:5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': link_id,
-                'link': new_value,
-                'confirmed': true
-            })
-        })
-        await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => linkFilesData.set(data))
-        sortedLinkList = sortLinkList();
-    }
-    editable = -1;
-    new_value = '';
-    old_value = '';
-}
-
 async function updateConfirmed(link_id, confirmed) {
     await fetch('http://localhost:5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
         method: 'POST',
@@ -85,6 +55,7 @@ async function updateConfirmed(link_id, confirmed) {
     sortedLinkList = sortLinkList();
 }
 
+let deletable=-1
 function itemDeletable(index) {
     return () => deletable = index;
 }
@@ -264,17 +235,7 @@ async function closeOut() {
                 <VCRCode closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             </td>
             <td><input id="confirmed-{index}" type="checkbox" bind:checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}></td>
-            <td on:dblclick={linkEditable(linkFile.link, index)}>
-            {#if index != editable}
-            <a href={linkFile.link} target="_blank">
-                <img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" />
-            </a>
-            {:else}
-            <form on:submit|preventDefault={(e) => updateLink(linkFile.link_id)}>
-                <input id="new_link_update" bind:value={new_value} />
-            </form>
-            {/if}
-            </td>
+            <Link closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             {/if}
         </tr>
         {/each}
