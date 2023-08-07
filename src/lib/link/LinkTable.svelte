@@ -5,6 +5,7 @@ import { linkFiles, linkFilesData, snippet_target } from './link.js';
 import Channel from '../update/Channel.svelte';
 import Time from '../update/Time.svelte';
 import Duration from '../update/Duration.svelte';
+import VCRCode from '../update/VCRCode.svelte';
 
 export let selected;
 
@@ -140,68 +141,6 @@ async function closeOut() {
     sortedLinkList = sortLinkList();
 }
 
-let duration_editable = -1;
-let new_duration = '';
-let old_duration = '';
-function DurationEditable(duration, index) {
-    return () => {
-        duration_editable = index;
-        new_duration = duration;
-        old_duration = duration;
-    }
-}
-async function updateDuration(box_id) {
-    if (new_duration != old_duration) {
-        await fetch('http://localhost:5000/duration/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'duration': new_duration
-            })
-        })
-        await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => linkFilesData.set(data))
-        sortedLinkList = sortLinkList();
-    }
-    duration_editable = -1;
-    new_duration = '';
-    old_duration = '';
-}
-
-let vcr_code_editable = -1;
-let new_vcr_code = '';
-let old_vcr_code = '';
-function VCRCodeEditable(vcr_code, index) {
-    return () => {
-        vcr_code_editable = index;
-        new_vcr_code = vcr_code;
-        old_vcr_code = vcr_code;
-    }
-}
-async function updateVCRCode(box_id, file_date) {
-    let date = new Date(file_date)
-    date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
-    if (new_vcr_code != old_vcr_code) {
-        await fetch('http://localhost:5000/vcr_code/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'year': date.getFullYear(),
-                'month': date.getMonth() + 1,
-                'day': date.getDate(),
-                'vcr_code': new_vcr_code
-            })
-        })
-        await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => linkFilesData.set(data))
-        sortedLinkList = sortLinkList();
-    }
-    vcr_code_editable = -1;
-    new_vcr_code = '';
-    old_vcr_code = '';
-}
 </script>
 
 <div>Count: {$sortedLinkList?.length}</div>
@@ -321,14 +260,8 @@ async function updateVCRCode(box_id, file_date) {
             <td>
                 <Duration closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             </td>
-            <td on:dblclick={VCRCodeEditable(linkFile.vcr_code, index)}>
-                {#if index != vcr_code_editable}
-                {linkFile.vcr_code}
-                {:else}
-                <form on:submit|preventDefault={(e) => updateVCRCode(linkFile.box_id, linkFile.file_date)}>
-                    <input id="vcr_code_update" bind:value={new_vcr_code} />
-                </form>
-                {/if}
+            <td>
+                <VCRCode closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             </td>
             <td><input id="confirmed-{index}" type="checkbox" bind:checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}></td>
             <td on:dblclick={linkEditable(linkFile.link, index)}>

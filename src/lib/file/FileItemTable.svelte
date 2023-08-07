@@ -6,6 +6,7 @@ import { fileItems, snippet_target } from './file.js';
 import Channel from '../update/Channel.svelte';
 import Time from '../update/Time.svelte';
 import Duration from '../update/Duration.svelte';
+import VCRCode from '../update/VCRCode.svelte';
 
 export let img_src;
 export let selected;
@@ -152,39 +153,6 @@ async function closeOut() {
     sortedFileItems = sortFileItems();
 }
 
-let vcr_code_editable = -1;
-let new_vcr_code = '';
-let old_vcr_code = '';
-function VCRCodeEditable(vcr_code, index) {
-    return () => {
-        vcr_code_editable = index;
-        new_vcr_code = vcr_code;
-        old_vcr_code = vcr_code;
-    }
-}
-async function updateVCRCode(box_id, file_date) {
-    let date = new Date(file_date)
-    date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
-    if (new_vcr_code != old_vcr_code) {
-        await fetch('http://localhost:5000/vcr_code/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'year': date.getFullYear(),
-                'month': date.getMonth() + 1,
-                'day': date.getDate(),
-                'vcr_code': new_vcr_code
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-        sortedFileItems = sortFileItems();
-    }
-    vcr_code_editable = -1;
-    new_vcr_code = '';
-    old_vcr_code = '';
-}
 </script>
 
 <div>Count: {$sortedFileItems?.length}</div>
@@ -298,14 +266,8 @@ async function updateVCRCode(box_id, file_date) {
             <td>
                 <Duration closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             </td>
-            <td on:dblclick={VCRCodeEditable(fileItem.vcr_code, index)}>
-                {#if index != vcr_code_editable}
-                {fileItem.vcr_code}
-                {:else}
-                <form on:submit|preventDefault={(e) => updateVCRCode(fileItem.box_id, fileItem.file_date)}>
-                    <input id="vcr_code_update" bind:value={new_vcr_code} />
-                </form>
-                {/if}
+            <td>
+                <VCRCode closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             </td>
             <td><a href='/link?link_id={fileItem.link}'>{fileItem.title}</a></td>
             <td>{fileItem.year}</td>

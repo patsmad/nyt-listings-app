@@ -4,6 +4,7 @@ import { fileItems, snippet_target } from './file.js';
 import Channel from '../update/Channel.svelte';
 import Time from '../update/Time.svelte';
 import Duration from '../update/Duration.svelte';
+import VCRCode from '../update/VCRCode.svelte';
 
 export let img_src;
 export let selected;
@@ -119,37 +120,6 @@ async function addLink(box_id) {
     closeModal();
 }
 
-let vcr_code_editable = false;
-let new_vcr_code = '';
-let old_vcr_code = '';
-function VCRCodeEditable(vcr_code) {
-    return () => {
-        vcr_code_editable = true;
-        new_vcr_code = vcr_code;
-        old_vcr_code = vcr_code;
-    }
-}
-async function updateVCRCode(box_id, file_date) {
-    let date = new Date(file_date)
-    date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
-    if (new_vcr_code != old_vcr_code) {
-        await fetch('http://localhost:5000/vcr_code/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'year': date.getFullYear(),
-                'month': date.getMonth() + 1,
-                'day': date.getDate(),
-                'vcr_code': new_vcr_code
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
-    closeModal();
-}
-
 async function closeOut() {
     await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
@@ -169,10 +139,7 @@ function openModal(fileItem) {
 }
 function closeModal() {
     editable = false;
-    vcr_code_editable = false;
     deletable = false;
-    new_vcr_code = '';
-    old_vcr_code = '';
     new_link = '';
     old_link = '';
     new_box = null;
@@ -238,16 +205,11 @@ function closeModal() {
                     </div>
                 </div>
                 <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left"><b>Votes: </b>{modalFileItem?.votes}</div>
-                    <div style="width: 150px; display: inline-block;" align="left" on:dblclick={VCRCodeEditable(modalFileItem?.vcr_code)}>
-                        <b>VCR Code: </b>
-                        {#if !vcr_code_editable}
-                        {modalFileItem?.vcr_code}
-                        {:else}
-                        <form on:submit|preventDefault={(e) => updateVCRCode(modalFileItem?.box_id, modalFileItem?.file_date)}>
-                            <input id="vcr_code_update" bind:value={new_vcr_code} />
-                        </form>
-                        {/if}
+                    <div style="width: 200px; display: inline-block;" align="left">
+                        <b>Votes: </b>{modalFileItem?.votes}
+                    </div>
+                    <div style="width: 150px; display: inline-block;" align="left">
+                        <VCRCode closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
                 {#if !deletable}
