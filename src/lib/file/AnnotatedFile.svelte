@@ -1,6 +1,10 @@
 <script>
 import { annotatedFileData } from './annotated.js';
 import { fileItems, snippet_target } from './file.js';
+import Channel from '../update/Channel.svelte';
+import Time from '../update/Time.svelte';
+import Duration from '../update/Duration.svelte';
+import VCRCode from '../update/VCRCode.svelte';
 
 export let img_src;
 export let selected;
@@ -116,123 +120,10 @@ async function addLink(box_id) {
     closeModal();
 }
 
-let vcr_code_editable = false;
-let new_vcr_code = '';
-let old_vcr_code = '';
-function VCRCodeEditable(vcr_code) {
-    return () => {
-        vcr_code_editable = true;
-        new_vcr_code = vcr_code;
-        old_vcr_code = vcr_code;
-    }
-}
-async function updateVCRCode(box_id, file_date) {
-    let date = new Date(file_date)
-    date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
-    if (new_vcr_code != old_vcr_code) {
-        await fetch('http://localhost:5000/vcr_code/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'year': date.getFullYear(),
-                'month': date.getMonth() + 1,
-                'day': date.getDate(),
-                'vcr_code': new_vcr_code
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
-    closeModal();
-}
-
-let channel_editable = false;
-let new_channel = '';
-let old_channel = '';
-function ChannelEditable(channel) {
-    return () => {
-        channel_editable = true;
-        new_channel = channel;
-        old_channel = channel;
-    }
-}
-async function updateChannel(box_id) {
-    if (new_channel != old_channel) {
-        await fetch('http://localhost:5000/channel/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'channel': new_channel
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
-    closeModal();
-}
-
-let time_editable = false;
-let new_time = '';
-let old_time = '';
-function TimeEditable(time, file_date) {
-    return () => {
-        time_editable = true;
-        if (time != null) {
-            new_time = time;
-            old_time = time;
-        } else {
-            new_time = file_date;
-            old_time = time;
-        }
-    }
-}
-async function updateTime(box_id) {
-    if (new_time != old_time) {
-        let date = new Date(new_time)
-        date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
-        await fetch('http://localhost:5000/time/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'year': date.getFullYear(),
-                'month': date.getMonth() + 1,
-                'day': date.getDate(),
-                'hour': date.getHours(),
-                'minute': date.getMinutes()
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
-    closeModal();
-}
-
-let duration_editable = false;
-let new_duration = '';
-let old_duration = '';
-function DurationEditable(duration) {
-    return () => {
-        duration_editable = true;
-        new_duration = duration;
-        old_duration = duration;
-    }
-}
-async function updateDuration(box_id) {
-    if (new_duration != old_duration) {
-        await fetch('http://localhost:5000/duration/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'duration': new_duration
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
+async function closeOut() {
+    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        .then(response => response.json())
+        .then(data => annotatedFileData.set(data))
     closeModal();
 }
 
@@ -248,21 +139,9 @@ function openModal(fileItem) {
 }
 function closeModal() {
     editable = false;
-    vcr_code_editable = false;
-    channel_editable = false;
-    time_editable = false;
-    duration_editable = false;
     deletable = false;
-    new_vcr_code = '';
-    old_vcr_code = '';
     new_link = '';
     old_link = '';
-    new_time = '';
-    old_time = '';
-    new_channel = '';
-    old_channel = '';
-    new_duration = '';
-    old_duration = '';
     new_box = null;
     old_box = null;
     dialog.close();
@@ -302,55 +181,35 @@ function closeModal() {
                 {/if}
                 {/if}
                 <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left"><b>Title: </b><a href="/link?link_id={modalFileItem?.link}" target="_blank">{modalFileItem?.title}</a></div>
-                    <div style="width: 150px; display: inline-block;" align="left" on:dblclick={ChannelEditable(modalFileItem?.channel)}>
-                        <b>Channel: </b>
-                        {#if !channel_editable}
-                        {modalFileItem?.channel}
-                        {:else}
-                        <form on:submit|preventDefault={(e) => updateChannel(modalFileItem?.box_id)}>
-                            <input id="channel_update" bind:value={new_channel} />
-                        </form>
-                        {/if}
+                    <div style="width: 200px; display: inline-block;" align="left">
+                        <b>Title: </b><a href="/link?link_id={modalFileItem?.link}" target="_blank">{modalFileItem?.title}</a>
+                    </div>
+                    <div style="width: 150px; display: inline-block;" align="left">
+                        <Channel closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
                 <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left"><b>Year: </b>{modalFileItem?.year}</div>
-                    <div style="width: 150px; display: inline-block;" align="left" on:dblclick={TimeEditable(modalFileItem?.time, modalFileItem?.file_date)}>
-                        <b>Time: </b>
-                        {#if !time_editable}
-                        {modalFileItem?.time}
-                        {:else}
-                        <form on:submit|preventDefault={(e) => updateTime(modalFileItem?.box_id)}>
-                            <input id="time_update" bind:value={new_time} />
-                        </form>
-                        {/if}
+                    <div style="width: 200px; display: inline-block;" align="left">
+                        <b>Year: </b>{modalFileItem?.year}
+                    </div>
+                    <div style="width: 150px; display: inline-block;" align="left">
+                        <Time closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
                 <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left"><b>Rating: </b>{modalFileItem?.rating}</div>
-                    <div style="width: 150px; display: inline-block;" align="left" on:dblclick={DurationEditable(modalFileItem?.duration_minutes)}>
-                        <b>Duration: </b>
-                        {#if !duration_editable}
-                        {modalFileItem?.duration_minutes}
-                        {:else}
-                        <form on:submit|preventDefault={(e) => updateDuration(modalFileItem?.box_id)}>
-                            <input id="duration_update" bind:value={new_duration} />
-                        </form>
-                        {/if}
+                    <div style="width: 200px; display: inline-block;" align="left">
+                        <b>Rating: </b>{modalFileItem?.rating}
+                    </div>
+                    <div style="width: 150px; display: inline-block;" align="left">
+                        <Duration closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
                 <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left"><b>Votes: </b>{modalFileItem?.votes}</div>
-                    <div style="width: 150px; display: inline-block;" align="left" on:dblclick={VCRCodeEditable(modalFileItem?.vcr_code)}>
-                        <b>VCR Code: </b>
-                        {#if !vcr_code_editable}
-                        {modalFileItem?.vcr_code}
-                        {:else}
-                        <form on:submit|preventDefault={(e) => updateVCRCode(modalFileItem?.box_id, modalFileItem?.file_date)}>
-                            <input id="vcr_code_update" bind:value={new_vcr_code} />
-                        </form>
-                        {/if}
+                    <div style="width: 200px; display: inline-block;" align="left">
+                        <b>Votes: </b>{modalFileItem?.votes}
+                    </div>
+                    <div style="width: 150px; display: inline-block;" align="left">
+                        <VCRCode closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
                 {#if !deletable}
