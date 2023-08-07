@@ -4,6 +4,7 @@ export let item;
 export let index;
 export let closeOut;
 export let show_title;
+
 let channel_editable;
 let new_channel;
 let old_channel;

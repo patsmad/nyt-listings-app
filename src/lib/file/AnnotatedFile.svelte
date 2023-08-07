@@ -2,6 +2,7 @@
 import { annotatedFileData } from './annotated.js';
 import { fileItems, snippet_target } from './file.js';
 import Channel from '../update/Channel.svelte';
+import Time from '../update/Time.svelte';
 
 export let img_src;
 export let selected;
@@ -155,43 +156,6 @@ async function closeOut() {
     closeModal();
 }
 
-let time_editable = false;
-let new_time = '';
-let old_time = '';
-function TimeEditable(time, file_date) {
-    return () => {
-        time_editable = true;
-        if (time != null) {
-            new_time = time;
-            old_time = time;
-        } else {
-            new_time = file_date;
-            old_time = time;
-        }
-    }
-}
-async function updateTime(box_id) {
-    if (new_time != old_time) {
-        let date = new Date(new_time)
-        date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
-        await fetch('http://localhost:5000/time/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'year': date.getFullYear(),
-                'month': date.getMonth() + 1,
-                'day': date.getDate(),
-                'hour': date.getHours(),
-                'minute': date.getMinutes()
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
-    closeModal();
-}
-
 let duration_editable = false;
 let new_duration = '';
 let old_duration = '';
@@ -231,15 +195,12 @@ function openModal(fileItem) {
 function closeModal() {
     editable = false;
     vcr_code_editable = false;
-    time_editable = false;
     duration_editable = false;
     deletable = false;
     new_vcr_code = '';
     old_vcr_code = '';
     new_link = '';
     old_link = '';
-    new_time = '';
-    old_time = '';
     new_duration = '';
     old_duration = '';
     new_box = null;
@@ -281,22 +242,19 @@ function closeModal() {
                 {/if}
                 {/if}
                 <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left"><b>Title: </b><a href="/link?link_id={modalFileItem?.link}" target="_blank">{modalFileItem?.title}</a></div>
+                    <div style="width: 200px; display: inline-block;" align="left">
+                        <b>Title: </b><a href="/link?link_id={modalFileItem?.link}" target="_blank">{modalFileItem?.title}</a>
+                    </div>
                     <div style="width: 150px; display: inline-block;" align="left">
                         <Channel closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
                 <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left"><b>Year: </b>{modalFileItem?.year}</div>
-                    <div style="width: 150px; display: inline-block;" align="left" on:dblclick={TimeEditable(modalFileItem?.time, modalFileItem?.file_date)}>
-                        <b>Time: </b>
-                        {#if !time_editable}
-                        {modalFileItem?.time}
-                        {:else}
-                        <form on:submit|preventDefault={(e) => updateTime(modalFileItem?.box_id)}>
-                            <input id="time_update" bind:value={new_time} />
-                        </form>
-                        {/if}
+                    <div style="width: 200px; display: inline-block;" align="left">
+                        <b>Year: </b>{modalFileItem?.year}
+                    </div>
+                    <div style="width: 150px; display: inline-block;" align="left">
+                        <Time closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
                 <div style="width: 400px;">

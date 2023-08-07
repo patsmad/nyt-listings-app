@@ -3,6 +3,7 @@ import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { linkFiles, linkFilesData, snippet_target } from './link.js';
 import Channel from '../update/Channel.svelte';
+import Time from '../update/Time.svelte';
 
 export let selected;
 
@@ -136,46 +137,6 @@ async function closeOut() {
         .then(response => response.json())
         .then(data => linkFilesData.set(data))
     sortedLinkList = sortLinkList();
-}
-
-let time_editable = -1;
-let new_time = '';
-let old_time = '';
-function TimeEditable(time, file_date, index) {
-    return () => {
-        time_editable = index;
-        if (time != null) {
-            new_time = time;
-            old_time = time;
-        } else {
-            new_time = file_date;
-            old_time = time;
-        }
-    }
-}
-async function updateTime(box_id) {
-    if (new_time != old_time) {
-        let date = new Date(new_time);
-        date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
-        await fetch('http://localhost:5000/time/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'year': date.getFullYear(),
-                'month': date.getMonth() + 1,
-                'day': date.getDate(),
-                'hour': date.getHours(),
-                'minute': date.getMinutes()
-            })
-        })
-        await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => linkFilesData.set(data))
-        sortedLinkList = sortLinkList();
-    }
-    time_editable = -1;
-    new_time = '';
-    old_time = '';
 }
 
 let duration_editable = -1;
@@ -353,14 +314,8 @@ async function updateVCRCode(box_id, file_date) {
             <td>
                 <Channel closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             </td>
-            <td on:dblclick={TimeEditable(linkFile.time, linkFile.file_date, index)}>
-                {#if index != time_editable}
-                {linkFile.time}
-                {:else}
-                <form on:submit|preventDefault={(e) => updateTime(linkFile.box_id)}>
-                    <input id="time_update" bind:value={new_time} />
-                </form>
-                {/if}
+            <td>
+                <Time closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             </td>
             <td on:dblclick={DurationEditable(linkFile.duration_minutes, index)}>
                 {#if index != duration_editable}
