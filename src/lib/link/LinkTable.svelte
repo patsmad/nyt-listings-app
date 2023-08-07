@@ -4,6 +4,7 @@ import { derived } from 'svelte/store'
 import { linkFiles, linkFilesData, snippet_target } from './link.js';
 import Channel from '../update/Channel.svelte';
 import Time from '../update/Time.svelte';
+import Duration from '../update/Duration.svelte';
 
 export let selected;
 
@@ -317,14 +318,8 @@ async function updateVCRCode(box_id, file_date) {
             <td>
                 <Time closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             </td>
-            <td on:dblclick={DurationEditable(linkFile.duration_minutes, index)}>
-                {#if index != duration_editable}
-                {linkFile.duration_minutes}
-                {:else}
-                <form on:submit|preventDefault={(e) => updateDuration(linkFile.box_id)}>
-                    <input id="duration_update" bind:value={new_duration} />
-                </form>
-                {/if}
+            <td>
+                <Duration closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             </td>
             <td on:dblclick={VCRCodeEditable(linkFile.vcr_code, index)}>
                 {#if index != vcr_code_editable}

@@ -3,6 +3,7 @@ import { annotatedFileData } from './annotated.js';
 import { fileItems, snippet_target } from './file.js';
 import Channel from '../update/Channel.svelte';
 import Time from '../update/Time.svelte';
+import Duration from '../update/Duration.svelte';
 
 export let img_src;
 export let selected;
@@ -156,32 +157,6 @@ async function closeOut() {
     closeModal();
 }
 
-let duration_editable = false;
-let new_duration = '';
-let old_duration = '';
-function DurationEditable(duration) {
-    return () => {
-        duration_editable = true;
-        new_duration = duration;
-        old_duration = duration;
-    }
-}
-async function updateDuration(box_id) {
-    if (new_duration != old_duration) {
-        await fetch('http://localhost:5000/duration/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'duration': new_duration
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-    }
-    closeModal();
-}
-
 let dialog;
 let modalFileItem;
 let modalPosterLink;
@@ -195,14 +170,11 @@ function openModal(fileItem) {
 function closeModal() {
     editable = false;
     vcr_code_editable = false;
-    duration_editable = false;
     deletable = false;
     new_vcr_code = '';
     old_vcr_code = '';
     new_link = '';
     old_link = '';
-    new_duration = '';
-    old_duration = '';
     new_box = null;
     old_box = null;
     dialog.close();
@@ -258,16 +230,11 @@ function closeModal() {
                     </div>
                 </div>
                 <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left"><b>Rating: </b>{modalFileItem?.rating}</div>
-                    <div style="width: 150px; display: inline-block;" align="left" on:dblclick={DurationEditable(modalFileItem?.duration_minutes)}>
-                        <b>Duration: </b>
-                        {#if !duration_editable}
-                        {modalFileItem?.duration_minutes}
-                        {:else}
-                        <form on:submit|preventDefault={(e) => updateDuration(modalFileItem?.box_id)}>
-                            <input id="duration_update" bind:value={new_duration} />
-                        </form>
-                        {/if}
+                    <div style="width: 200px; display: inline-block;" align="left">
+                        <b>Rating: </b>{modalFileItem?.rating}
+                    </div>
+                    <div style="width: 150px; display: inline-block;" align="left">
+                        <Duration closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
                 <div style="width: 400px;">

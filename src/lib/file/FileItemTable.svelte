@@ -5,6 +5,7 @@ import { annotatedFileData } from './annotated.js'
 import { fileItems, snippet_target } from './file.js';
 import Channel from '../update/Channel.svelte';
 import Time from '../update/Time.svelte';
+import Duration from '../update/Duration.svelte';
 
 export let img_src;
 export let selected;
@@ -151,35 +152,6 @@ async function closeOut() {
     sortedFileItems = sortFileItems();
 }
 
-let duration_editable = -1;
-let new_duration = '';
-let old_duration = '';
-function DurationEditable(duration, index) {
-    return () => {
-        duration_editable = index;
-        new_duration = duration;
-        old_duration = duration;
-    }
-}
-async function updateDuration(box_id) {
-    if (new_duration != old_duration) {
-        await fetch('http://localhost:5000/duration/update?api_key=' + import.meta.env.VITE_API_KEY, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': box_id,
-                'duration': new_duration
-            })
-        })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-            .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-        sortedFileItems = sortFileItems();
-    }
-    duration_editable = -1;
-    new_duration = '';
-    old_duration = '';
-}
-
 let vcr_code_editable = -1;
 let new_vcr_code = '';
 let old_vcr_code = '';
@@ -323,14 +295,8 @@ async function updateVCRCode(box_id, file_date) {
             <td>
                 <Time closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             </td>
-            <td on:dblclick={DurationEditable(fileItem.duration_minutes, index)}>
-                {#if index != duration_editable}
-                {fileItem.duration_minutes}
-                {:else}
-                <form on:submit|preventDefault={(e) => updateDuration(fileItem.box_id)}>
-                    <input id="duration_update" bind:value={new_duration} />
-                </form>
-                {/if}
+            <td>
+                <Duration closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             </td>
             <td on:dblclick={VCRCodeEditable(fileItem.vcr_code, index)}>
                 {#if index != vcr_code_editable}
