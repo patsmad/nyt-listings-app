@@ -5,6 +5,8 @@ export let index;
 export let closeOut;
 export let show_title;
 
+let tag = show_title? "div" : "td";
+
 let time_editable;
 let new_time;
 let old_time;
@@ -51,13 +53,28 @@ async function updateTime(box_id) {
 
 </script>
 
-<div on:dblclick={ makeTimeEditable(item?.time, item?.file_date, index) }>
-    {#if show_title}<b>Time: </b>{/if}
-    {#if time_editable != index}
-    {item?.time}
-    {:else}
-    <form on:submit|preventDefault={ (e) => updateTime(item?.box_id) }>
-        <input id="time_update" bind:value={new_time} />
-    </form>
+<svelte:element this={tag} on:dblclick={ makeTimeEditable(item?.time, item?.file_date, index) }>
+    {#if show_title}
+        <b>Time: </b>
     {/if}
-</div>
+    {#if time_editable != index}
+        {item?.time}
+    {:else}
+        <form on:submit|preventDefault={ (e) => updateTime(item?.box_id) }>
+            <input id="time_update" bind:value={new_time} />
+        </form>
+    {/if}
+</svelte:element>
+
+<style>
+
+td {
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+}
+
+</style>

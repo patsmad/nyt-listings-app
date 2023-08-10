@@ -5,6 +5,8 @@ export let index;
 export let closeOut;
 export let show_title;
 
+let tag = show_title? "div" : "td";
+
 let channel_editable;
 let new_channel;
 let old_channel;
@@ -40,13 +42,28 @@ async function updateChannel(box_id) {
 
 </script>
 
-<div on:dblclick={makeChannelEditable(item?.channel, index)}>
-    {#if show_title}<b>Channel: </b>{/if}
-    {#if channel_editable != index}
-    {item?.channel}
-    {:else}
-    <form on:submit|preventDefault={ (e) => updateChannel(item?.box_id) }>
-        <input id="channel_update" bind:value={new_channel} />
-    </form>
+<svelte:element this={tag} on:dblclick={makeChannelEditable(item?.channel, index)}>
+    {#if show_title}
+        <b>Channel: </b>
     {/if}
-</div>
+    {#if channel_editable != index}
+        {item?.channel}
+    {:else}
+        <form on:submit|preventDefault={ (e) => updateChannel(item?.box_id) }>
+            <input id="channel_update" bind:value={new_channel} />
+        </form>
+    {/if}
+</svelte:element>
+
+<style>
+
+td {
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+}
+
+</style>

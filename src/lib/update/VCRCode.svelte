@@ -5,6 +5,8 @@ export let index;
 export let closeOut;
 export let show_title;
 
+let tag = show_title? "div" : "td";
+
 let vcr_code_editable;
 let new_vcr_code;
 let old_vcr_code;
@@ -45,13 +47,28 @@ async function updateVCRCode(box_id, file_date) {
 
 </script>
 
-<div on:dblclick={makeVCRCodeEditable(item?.vcr_code, index)}>
-    {#if show_title}<b>VCR Code: </b>{/if}
-    {#if vcr_code_editable != index}
-    {item?.vcr_code}
-    {:else}
-    <form on:submit|preventDefault={(e) => updateVCRCode(item?.box_id, item?.file_date)}>
-        <input id="vcr_code_update" bind:value={new_vcr_code} />
-    </form>
+<svelte:element this={tag}  on:dblclick={makeVCRCodeEditable(item?.vcr_code, index)}>
+    {#if show_title}
+        <b>VCR Code: </b>
     {/if}
-</div>
+    {#if vcr_code_editable != index}
+        {item?.vcr_code}
+    {:else}
+        <form on:submit|preventDefault={(e) => updateVCRCode(item?.box_id, item?.file_date)}>
+            <input id="vcr_code_update" bind:value={new_vcr_code} />
+        </form>
+    {/if}
+</svelte:element>
+
+<style>
+
+td {
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+}
+
+</style>

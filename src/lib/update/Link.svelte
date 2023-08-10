@@ -6,6 +6,8 @@ export let index;
 export let closeOut;
 export let show_title;
 
+let tag = show_title? "div" : "td";
+
 let link_editable;
 let new_link;
 let old_link;
@@ -57,25 +59,15 @@ async function addLink(box_id) {
 
 </script>
 
+<svelte:element this={tag} on:dblclick={makeLinkEditable(item?.link, index)}>
 {#if link_editable != index}
-    <td style="width: 400px; align: center;" on:dblclick={makeLinkEditable(item?.link, index)}>
-    {#if show_title}
-        <b>Link: </b>
-        {#if item?.link}
-            <a href={item?.link} target="_blank">
-                {item?.link}
-            </a>
-        {/if}
-    {:else}
-        {#if item?.link}
-            <a href={item.link} target="_blank" style="height: 32px; width: 32px;">
-                <img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" />
-            </a>
-        {/if}
+    {#if show_title}<b>Link: </b>{/if}
+    {#if item?.link}
+        <a href={item?.link} target="_blank">
+            {#if show_title}{item?.link}{:else}<img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" />{/if}
+        </a>
     {/if}
-    </td>
 {:else}
-    <td style="width: 400px; align: center;">
     {#if show_title}<b>Link: </b>{/if}
     {#if item?.link_id}
         <form on:submit|preventDefault={(e) => updateLink(item?.link_id)}>
@@ -86,8 +78,8 @@ async function addLink(box_id) {
             <input bind:value={new_link} />
         </form>
     {/if}
-    </td>
 {/if}
+</svelte:element>
 
 <style>
 

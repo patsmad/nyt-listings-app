@@ -222,19 +222,13 @@ async function closeOut() {
                 </div>
             </td>
             {/if}
+            <Channel closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
+            <Time closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
+            <Duration closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
+            <VCRCode closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             <td>
-                <Channel closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
+                <input id="confirmed-{index}" type="checkbox" bind:checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}>
             </td>
-            <td>
-                <Time closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            </td>
-            <td>
-                <Duration closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            </td>
-            <td>
-                <VCRCode closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            </td>
-            <td><input id="confirmed-{index}" type="checkbox" bind:checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}></td>
             <Link closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             {/if}
         </tr>

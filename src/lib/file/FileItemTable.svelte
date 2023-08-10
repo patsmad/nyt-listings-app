@@ -208,18 +208,10 @@ async function closeOut() {
                 </div>
             </td>
             {/if}
-            <td>
-                <Channel closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            </td>
-            <td>
-                <Time closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            </td>
-            <td>
-                <Duration closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            </td>
-            <td>
-                <VCRCode closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            </td>
+            <Channel closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
+            <Time closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
+            <Duration closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
+            <VCRCode closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             <td><a href='/link?link_id={fileItem.link}'>{fileItem.title}</a></td>
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>
