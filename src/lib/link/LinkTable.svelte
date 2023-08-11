@@ -3,10 +3,11 @@ import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { linkFiles, linkFilesData, snippet_target } from './link.js';
 import Channel from '../update/Channel.svelte';
-import Time from '../update/Time.svelte';
+import Confirmed from '../update/Confirmed.svelte';
 import Duration from '../update/Duration.svelte';
-import VCRCode from '../update/VCRCode.svelte';
 import Link from '../update/Link.svelte';
+import Time from '../update/Time.svelte';
+import VCRCode from '../update/VCRCode.svelte';
 
 export let selected;
 
@@ -39,20 +40,6 @@ function sortColumnFunction(fnc, activeTH) {
 function getImgSrc(linkFile) {
     return 'http://localhost:5000/img/?file_id=' + linkFile.file_id + '&api_key=' + import.meta.env.VITE_API_KEY +
         '&box=' + linkFile.left + ',' + linkFile.top + ',' + linkFile.width + ',' + linkFile.height
-}
-
-async function updateConfirmed(link_id, confirmed) {
-    await fetch('http://localhost:5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
-        method: 'POST',
-        body: JSON.stringify({
-            'id': link_id,
-            'confirmed': !confirmed
-        })
-    })
-    await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
-        .then(response => response.json())
-        .then(data => linkFilesData.set(data))
-    sortedLinkList = sortLinkList();
 }
 
 let deletable=-1
@@ -226,9 +213,7 @@ async function closeOut() {
             <Time closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             <Duration closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             <VCRCode closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            <td>
-                <input id="confirmed-{index}" type="checkbox" bind:checked={linkFile.confirmed} on:click={updateConfirmed(linkFile.link_id, linkFile.confirmed)}>
-            </td>
+            <Confirmed closeOut={closeOut} item={linkFile} index={index}/>
             <Link closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             {/if}
         </tr>

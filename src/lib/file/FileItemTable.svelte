@@ -3,10 +3,11 @@ import { derived } from 'svelte/store'
 import { annotatedFileData } from './annotated.js'
 import { fileItems, snippet_target } from './file.js';
 import Channel from '../update/Channel.svelte';
-import Time from '../update/Time.svelte';
+import Confirmed from '../update/Confirmed.svelte';
 import Duration from '../update/Duration.svelte';
-import VCRCode from '../update/VCRCode.svelte';
 import Link from '../update/Link.svelte';
+import Time from '../update/Time.svelte';
+import VCRCode from '../update/VCRCode.svelte';
 
 export let img_src;
 export let selected;
@@ -31,20 +32,6 @@ function sortColumnFunction(fnc, activeTH) {
         active = activeTH;
         sortedFileItems = sortFileItems();
     }
-}
-
-async function updateConfirmed(link_id, confirmed) {
-    await fetch('http://localhost:5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
-        method: 'POST',
-        body: JSON.stringify({
-            'id': link_id,
-            'confirmed': !confirmed
-        })
-    })
-    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-        .then(response => response.json())
-        .then(data => annotatedFileData.set(data))
-    sortedFileItems = sortFileItems();
 }
 
 let deletable=-1
@@ -135,7 +122,7 @@ async function closeOut() {
                 <button class="x" on:click={deleteItem(fileItem.id)}>X</button>
                 {/if}
             </td>
-            <td><input id="confirmed-{index}" type="checkbox" bind:checked={fileItem.confirmed} on:click={updateConfirmed(fileItem.link_id, fileItem.confirmed)}></td>
+            <Confirmed closeOut={closeOut} item={fileItem} index={index}/>
             {#if index != editable_box}
             <td class="snippet" style="height: {fileItem.scale() * fileItem.height}px; min-width: {snippet_target}px; max-width: {snippet_target}px;"
                 on:dblclick={boxEditable(fileItem, index)}
