@@ -14,8 +14,8 @@ export let selected;
 let linkFilesList = derived(linkFiles, linkFiles => linkFiles.link_files??[]);
 
 let asc = true;
-let active = 'id';
-let sortFnc = item => item.id;
+let active = 'time';
+let sortFnc = item => item.time_as_decimal();
 
 let sortLinkList = () => derived(
     linkFilesList,
