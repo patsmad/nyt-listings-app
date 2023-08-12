@@ -35,7 +35,8 @@ export class FileItem {
         this.rating = rating;
         this.votes = votes;
         this.confirmed = confirmed
-        this.link_edit = false;
+
+        this.best_available_date = this.time ? this.time : this.file_date;
     }
 
     scale() {
@@ -55,8 +56,8 @@ export class FileItem {
     }
 
     time_as_decimal() {
-        if (this.time !== null) {
-            let date = new Date(this.time)
+        if (this.best_available_date !== null) {
+            let date = new Date(this.best_available_date)
             return date.getTime()
         } else {
             return null;

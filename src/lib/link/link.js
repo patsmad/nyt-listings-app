@@ -74,6 +74,8 @@ class LinkFile {
         this.link_id = link_id;
         this.link = link;
         this.confirmed = confirmed;
+
+        this.best_available_date = this.time ? this.time : this.file_date;
     }
 
     scale() {
@@ -93,8 +95,8 @@ class LinkFile {
     }
 
     time_as_decimal() {
-        if (this.time !== null) {
-            let date = new Date(this.time)
+        if (this.best_available_date !== null) {
+            let date = new Date(this.best_available_date)
             return date.getTime()
         } else {
             return null;
