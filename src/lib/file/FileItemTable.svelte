@@ -4,6 +4,7 @@ import { annotatedFileData } from './annotated.js'
 import { fileItems, snippet_target } from './file.js';
 import Channel from '../update/Channel.svelte';
 import Confirmed from '../update/Confirmed.svelte';
+import Delete from '../update/Delete.svelte';
 import Duration from '../update/Duration.svelte';
 import Link from '../update/Link.svelte';
 import Time from '../update/Time.svelte';
@@ -32,24 +33,6 @@ function sortColumnFunction(fnc, activeTH) {
         active = activeTH;
         sortedFileItems = sortFileItems();
     }
-}
-
-let deletable=-1
-function itemDeletable(index) {
-    return () => deletable = index;
-}
-async function deleteItem(item_id) {
-    await fetch('http://localhost:5000/item/delete?api_key=' + import.meta.env.VITE_API_KEY, {
-        method: 'POST',
-        body: JSON.stringify({
-            'id': item_id
-        })
-    })
-    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-        .then(response => response.json())
-        .then(data => annotatedFileData.set(data))
-    sortedFileItems = sortFileItems();
-    deletable = -1;
 }
 
 let editable_box=-1;
@@ -97,7 +80,7 @@ async function closeOut() {
 <table class="file-item-table">
     <thead>
         <tr>
-            <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.id, 'id')}>ID</th>
+            <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.item_id, 'id')}>ID</th>
             <th class="isSortable {active === 'confirmed' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.confirmed, 'confirmed')}>Confirmed</th>
             <th>Snippet</th>
             <th class="isSortable {active === 'channel' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.channel, 'channel')}>Channel</th>
@@ -115,13 +98,7 @@ async function closeOut() {
     {#if $sortedFileItems}
         {#each $sortedFileItems as fileItem, index}
         <tr>
-            <td on:dblclick={itemDeletable(index)}>
-                {#if deletable != index}
-                {fileItem.id}
-                {:else}
-                <button class="x" on:click={deleteItem(fileItem.id)}>X</button>
-                {/if}
-            </td>
+            <Delete  closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             <Confirmed closeOut={closeOut} item={fileItem} index={index}/>
             {#if index != editable_box}
             <td class="snippet" style="height: {fileItem.scale() * fileItem.height}px; min-width: {snippet_target}px; max-width: {snippet_target}px;"
@@ -243,18 +220,6 @@ th {
 .isActive.desc:after {
     content: "▲";
     padding-left: 5px;
-}
-
-.x {
-	border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #ff5248;
-    cursor: pointer;
-    transition: border-color 0.25s;
 }
 
 .snippet {

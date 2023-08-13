@@ -14,8 +14,8 @@ export const fileItems = derived(annotatedFile, annotatedFile => annotatedFile.i
 export const snippet_target = 400;
 
 export class FileItem {
-    constructor(id, file_date, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, title, year, rating, votes, confirmed) {
-        this.id = id;
+    constructor(item_id, file_date, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, title, year, rating, votes, confirmed) {
+        this.item_id = item_id;
         this.file_date = file_date;
         this.x = x;
         this.y = y;

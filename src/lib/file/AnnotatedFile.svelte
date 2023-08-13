@@ -2,10 +2,11 @@
 import { annotatedFileData } from './annotated.js';
 import { fileItems, snippet_target } from './file.js';
 import Channel from '../update/Channel.svelte';
-import Time from '../update/Time.svelte';
+import Delete from '../update/Delete.svelte';
 import Duration from '../update/Duration.svelte';
-import VCRCode from '../update/VCRCode.svelte';
 import Link from '../update/Link.svelte';
+import Time from '../update/Time.svelte';
+import VCRCode from '../update/VCRCode.svelte';
 
 export let img_src;
 export let selected;
@@ -35,20 +36,6 @@ async function addItem(mouse) {
     await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
-}
-
-let deletable = false;
-async function deleteItem(item_id) {
-    await fetch('http://localhost:5000/item/delete?api_key=' + import.meta.env.VITE_API_KEY, {
-        method: 'POST',
-        body: JSON.stringify({
-            'id': item_id
-        })
-    })
-    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-        .then(response => response.json())
-        .then(data => annotatedFileData.set(data))
-    closeModal();
 }
 
 let new_box;
@@ -97,7 +84,6 @@ function openModal(fileItem) {
 }
 
 function closeModal() {
-    deletable = false;
     new_box = null;
     old_box = null;
     dialog.close();
@@ -160,15 +146,7 @@ function closeModal() {
                         <VCRCode closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                 </div>
-                {#if !deletable}
-                <button class="x" on:click={() => deletable = true}>Delete Item</button>
-                {:else}
-                <div>Are you sure?</div>
-                <span>
-                <button class="x" on:click={deleteItem(modalFileItem.id)} style="background-color: #777777;">Yes</button>
-                <button class="x" on:click={() => deletable = false}>No</button>
-                </span>
-                {/if}
+                <Delete  closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
             </div>
             <div class="snippet" style="height: {new_box?.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px; display: inline-block;">
                 <div class="snippet" style="height: {new_box?.largest_height()}px; position: relative; top: 0px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
@@ -248,24 +226,16 @@ function closeModal() {
 </main>
 
 <style>
+
 .box {
     cursor: pointer;
 }
-.x {
-	border-radius: 3px;
-    border: 1px solid transparent;
-    padding: 0.3em 0.6em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #ff5248;
-    cursor: pointer;
-    transition: border-color 0.25s;
-}
+
 .snippet {
     padding-left: 0px;
     padding-right: 0px;
     padding-top: 0px;
     padding-bottom: 0px;
 }
+
 </style>
