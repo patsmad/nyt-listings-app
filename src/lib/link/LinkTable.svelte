@@ -200,21 +200,9 @@ async function closeOut() {
 </table>
 
 <style>
+
 table {
     width: 100%;
-}
-
-th, td {
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-}
-
-th {
-    background-color: #117bb7aa;
 }
 
 .isSortable {
@@ -229,10 +217,6 @@ th {
 .isActive.desc:after {
     content: "▲";
     padding-left: 5px;
-}
-
-.imdb-logo {
-    height: 32px;
 }
 
 .snippet {
