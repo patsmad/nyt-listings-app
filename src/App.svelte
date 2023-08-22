@@ -2,12 +2,19 @@
     import bmtLogo from './assets/bmtlogo1.png'
     import FileList from './lib/file/FileList.svelte'
     import LinkList from './lib/link/LinkList.svelte'
+    import { ClerkProvider, SignIn, UserButton, SignedIn, SignedOut} from './lib/clerk/index.js';
 
     let url = new URL(window.location);
     let page = url.pathname;
 </script>
 
 <main>
+  <ClerkProvider />
+  <span style="float: right;">
+  <UserButton
+    userProfileMode="modal"
+  />
+  </span>
   <span class="heading">
     <div style="width: 25%;">
       <a href="https://www.badmovietwins.com" target="_blank" rel="noreferrer">
@@ -16,6 +23,10 @@
     </div>
     <h1 style="width: 75%;">BMT / New York Times</h1>
   </span>
+  <SignedOut>
+    <SignIn />
+  </SignedOut>
+  <SignedIn>
   <span class="mean">
   <a class="btn" href="/file"><button>File Search</button></a>
   <a class="btn" href="/link"><button>Link Search</button></a>
@@ -31,6 +42,7 @@
     <LinkList />
   </div>
   {/if}
+  </SignedIn>
 </main>
 
 <style>
