@@ -84,7 +84,9 @@ async function closeOut() {
 
 </script>
 
-<div>Count: {$sortedLinkList?.length}</div>
+{#if $linkFiles.link_files}
+    <div>Count: {$sortedLinkList.length}</div>
+{/if}
 <table class="link-file-info">
     <tr>
         <td><a href={$linkFiles?.link_info?.link} target="_blank"><img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" /></a></td>
