@@ -98,7 +98,7 @@ async function closeOut() {
     {#if $sortedFileItems}
         {#each $sortedFileItems as fileItem, index}
         <tr>
-            <Delete  closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
+            <Delete closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             <Confirmed closeOut={closeOut} item={fileItem} index={index}/>
             {#if index != editable_box}
             <td class="snippet" style="height: {fileItem.scale() * fileItem.height}px; min-width: {snippet_target}px; max-width: {snippet_target}px;"
