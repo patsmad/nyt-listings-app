@@ -19,7 +19,7 @@ let display_img = false;
 function loadImg() {
     if (img) {
         original_height = img.height;
-        new_height = 2000;
+        new_height = 3000;
         display_img = true;
     }
 }
@@ -94,7 +94,7 @@ function closeModal() {
     {#if $fileItems}
     <div>
         <img class="annotated-file"
-            style="height: {new_height}px;"
+            style="height: {new_height}px; left: -1000px; position: relative;"
             bind:this={img}
             src={img_src}
             alt="Annotated file for file id {selected}"
@@ -193,34 +193,7 @@ function closeModal() {
             </div>
             {/if}
         </dialog>
-        {#each $fileItems as fileItem, index}
-            <div style="
-                      position: absolute;
-                      transform: translate(-50%, -50%);
-                      left: { img?.offsetLeft + fileItem.x * new_height / original_height }px;
-                      top: { img?.offsetTop + fileItem.y * new_height / original_height }px;
-                      width: 10px;
-                      height: 10px;
-                      background: { fileItem.link == '' ? 'rgba(17, 123, 183, 0.35)'  : 'rgba(183, 52, 30, 0.5)' };
-                      border-radius: 5px;
-                      color: #000000"
-            ></div>
-            <button class="box" style="
-                      position: absolute;
-                      left: { img?.offsetLeft + fileItem.left * new_height / original_height - 1 }px;
-                      top: { img?.offsetTop + fileItem.top * new_height / original_height - 1 }px;
-                      width: {fileItem.width * new_height / original_height + 2}px;
-                      height: {fileItem.height * new_height / original_height + 2}px;
-                      background: {fileItem.link == '' ? 'rgba(183, 52, 30, 0.5)' : (fileItem.vcr_code === null ? 'rgb(223, 203, 90, 0.30)' : 'rgba(17, 123, 183, 0.35)') };
-                      border-radius: 0px;
-                      padding-top: 0px;
-                      padding-bottom: 0px;
-                      color: #000000"
-                 on:click={openModal(fileItem)}
-                 on:keypress={(e) => openModal(fileItem)}
-            >
-            </button>
-        {/each}
+
     </div>
     {/if}
 </main>

@@ -9,7 +9,7 @@ let img_src;
 let files = writable([]);
 let sortedFiles = derived(
     files,
-    files => files?.sort((fileA, fileB) => {
+    files => files?.filter(file => new Date(file.file_date).getDay() == 0).sort((fileA, fileB) => {
         if (fileA.name > fileB.name) { return 1; }
         if (fileA.name < fileB.name) { return -1; }
         return 0;
