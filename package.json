@@ -14,6 +14,7 @@
     "vite": "^4.3.2"
   },
   "dependencies": {
+    "@clerk/clerk-js": "^4.68.1",
     "svelte-table": "^0.5.11"
   }
 }
