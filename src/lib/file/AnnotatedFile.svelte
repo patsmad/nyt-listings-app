@@ -211,7 +211,11 @@ function closeModal() {
                       top: { img?.offsetTop + fileItem.top * new_height / original_height - 1 }px;
                       width: {fileItem.width * new_height / original_height + 2}px;
                       height: {fileItem.height * new_height / original_height + 2}px;
-                      background: {fileItem.link == '' ? 'rgba(183, 52, 30, 0.5)' : (fileItem.vcr_code === null ? 'rgb(223, 203, 90, 0.30)' : 'rgba(17, 123, 183, 0.35)') };
+                      background: {fileItem.link == '' ? 'rgba(183, 52, 30, 0.5)' :
+                        (fileItem.vcr_code === null ?
+                            (fileItem.channel !== null || fileItem.time !== null || fileItem.duration_minutes !== null ?
+                                'repeating-linear-gradient(45deg, rgba(17, 123, 183, 0.35), rgba(17, 123, 183, 0.35) 10%, rgb(300, 300, 300, 0.30) 11%, rgb(300, 300, 300, 0.30) 20%)' : 'rgb(223, 203, 90, 0.30)'
+                            ) : 'rgba(17, 123, 183, 0.35)') };
                       border-radius: 0px;
                       padding-top: 0px;
                       padding-bottom: 0px;
