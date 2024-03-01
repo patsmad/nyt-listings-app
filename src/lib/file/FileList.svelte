@@ -31,15 +31,16 @@ onMount(async () => {
         .then(response => response.json())
         .then(data => files.set(data))
 });
-
-let selectedFileIndex;
+let selectedFileIndex = derived(
+    sortedFiles,
+    sortedFiles => sortedFiles.findIndex(file => file.id == selected)
+);
 async function handleSelected() {
     await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
     img_src = 'http://localhost:5000/img/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY
     display = true;
-    selectedFileIndex = $sortedFiles.findIndex(file => file.id == selected);
 }
 </script>
 
@@ -57,16 +58,16 @@ async function handleSelected() {
     {/if}
     {#if display}
     <div>
-        {#if selectedFileIndex > 0}
-        <a href="/file?file_id={$sortedFiles[selectedFileIndex - 1].id}{display_table ? '' : '#annotation'}"><button>&lt;</button></a>
+        {#if $selectedFileIndex > 0}
+        <a href="/file?file_id={$sortedFiles[$selectedFileIndex - 1].id}{display_table ? '' : '#annotation'}"><button>&lt;</button></a>
         {:else}
         <button disabled>&lt;</button>
         {/if}
         <button on:click={() => display_table = !display_table}>
             {#if display_table}Annotation{:else}Table{/if}
         </button>
-        {#if selectedFileIndex < $sortedFiles.length - 1}
-        <a href="/file?file_id={$sortedFiles[selectedFileIndex + 1].id}{display_table ? '' : '#annotation'}"><button>&gt;</button></a>
+        {#if $selectedFileIndex < $sortedFiles.length - 1}
+        <a href="/file?file_id={$sortedFiles[$selectedFileIndex + 1].id}{display_table ? '' : '#annotation'}"><button>&gt;</button></a>
         {:else}
         <button disabled>&gt;</button>
         {/if}
