@@ -8,6 +8,7 @@ import Delete from '../update/Delete.svelte';
 import Duration from '../update/Duration.svelte';
 import Link from '../update/Link.svelte';
 import Time from '../update/Time.svelte';
+import Title from '../update/Title.svelte';
 import VCRCode from '../update/VCRCode.svelte';
 
 export let img_src;
@@ -176,7 +177,7 @@ async function closeOut() {
             <Time closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             <Duration closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             <VCRCode closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            <td><a href='/link?link_id={fileItem.link}'>{fileItem.title}</a></td>
+            <Title closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>
             <td>{fileItem.votes}</td>

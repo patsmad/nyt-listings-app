@@ -6,6 +6,7 @@ import Delete from '../update/Delete.svelte';
 import Duration from '../update/Duration.svelte';
 import Link from '../update/Link.svelte';
 import Time from '../update/Time.svelte';
+import Title from '../update/Title.svelte';
 import VCRCode from '../update/VCRCode.svelte';
 
 export let img_src;
@@ -116,7 +117,7 @@ function closeModal() {
                 </div>
                 <div style="width: 400px;">
                     <div style="width: 200px; display: inline-block;" align="left">
-                        <b>Title: </b><a href="/link?link_id={modalFileItem?.link}" target="_blank">{modalFileItem?.title}</a>
+                        <Title closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                     </div>
                     <div style="width: 150px; display: inline-block;" align="left">
                         <Channel closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
