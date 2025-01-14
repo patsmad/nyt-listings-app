@@ -2,6 +2,7 @@
     import bmtLogo from './assets/bmtlogo1.png'
     import FileList from './lib/file/FileList.svelte'
     import LinkList from './lib/link/LinkList.svelte'
+    import TitleList from './lib/title/TitleList.svelte'
     import { ClerkProvider, SignIn, UserButton, SignedIn, SignedOut} from './lib/clerk/index.js';
 
     let url = new URL(window.location);
@@ -30,6 +31,7 @@
   <span class="mean">
   <a class="btn" href="/file"><button>File Search</button></a>
   <a class="btn" href="/link"><button>Link Search</button></a>
+  <a class="btn" href="/title"><button>Title Search</button></a>
   </span>
 
   {#if page === '/file' || page === '/'}
@@ -42,6 +44,11 @@
     <LinkList />
   </div>
   {/if}
+  {#if page === '/title'}
+    <div class="card">
+      <TitleList />
+    </div>
+    {/if}
   </SignedIn>
 </main>
 
