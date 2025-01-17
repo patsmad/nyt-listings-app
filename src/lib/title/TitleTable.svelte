@@ -23,6 +23,7 @@ async function closeOut() {
             <th>Year</th>
             <th>Rating</th>
             <th>Votes</th>
+            <th>Count</th>
         </tr>
     </thead>
     <tbody>
@@ -34,6 +35,7 @@ async function closeOut() {
                <td>{title?.year}</td>
                <td>{title?.rating}</td>
                <td>{title?.votes}</td>
+               <td>{title?.count}</td>
            </tr>
         {/each}
     {/if}
