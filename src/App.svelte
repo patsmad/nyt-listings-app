@@ -3,6 +3,7 @@
     import FileList from './lib/file/FileList.svelte'
     import LinkList from './lib/link/LinkList.svelte'
     import TitleList from './lib/title/TitleList.svelte'
+    import YearList from './lib/year/YearList.svelte'
     import { ClerkProvider, SignIn, UserButton, SignedIn, SignedOut} from './lib/clerk/index.js';
 
     let url = new URL(window.location);
@@ -32,6 +33,7 @@
   <a class="btn" href="/file"><button>File Search</button></a>
   <a class="btn" href="/link"><button>Link Search</button></a>
   <a class="btn" href="/title"><button>Title Search</button></a>
+  <a class="btn" href="/year"><button>Year Search</button></a>
   </span>
 
   {#if page === '/file' || page === '/'}
@@ -48,7 +50,12 @@
     <div class="card">
       <TitleList />
     </div>
-    {/if}
+  {/if}
+  {#if page === '/year'}
+      <div class="card">
+        <YearList />
+      </div>
+  {/if}
   </SignedIn>
 </main>
 
