@@ -82,8 +82,21 @@ async function closeOut() {
     sortedLinkList = sortLinkList();
 }
 
+async function checkVCRCodeLink(link) {
+    await fetch('http://localhost:5000/vcr_code/check_link/?api_key=' + import.meta.env.VITE_API_KEY, {
+        method: 'POST',
+        body: JSON.stringify({
+            'link': link
+        })
+    })
+    await closeOut();
+}
+
 </script>
 
+<button on:click={checkVCRCodeLink(selected)}>
+    Check
+</button>
 {#if $linkFiles.link_files}
     <div>Count: {$sortedLinkList.length}</div>
 {/if}
