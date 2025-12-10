@@ -16,27 +16,58 @@ let img;
 let original_height;
 let new_height;
 let display_img = false;
+let x1;
+let y1;
 
 function loadImg() {
     if (img) {
         original_height = img.height;
-        new_height = 2000;
+        new_height = 1000;
         display_img = true;
     }
 }
 
 async function addItem(mouse) {
-    await fetch('http://localhost:5000/item/add?api_key=' + import.meta.env.VITE_API_KEY, {
-        method: 'POST',
-        body: JSON.stringify({
-            'file_id': selected,
-            'x': parseInt(mouse.offsetX * original_height / new_height),
-            'y': parseInt(mouse.offsetY * original_height / new_height)
+    if (x1 && y1) {
+        let left;
+        let right;
+        let top;
+        let bottom;
+        let x2 = mouse.offsetX * original_height / new_height;
+        let y2 = mouse.offsetY * original_height / new_height
+        if (x1 < x2) {
+            left = x1;
+            right = x2;
+        } else {
+            left = x2;
+            right = x1;
+        }
+        if (y1 < y2) {
+            top = y1;
+            bottom = y2;
+        } else {
+            top = y2;
+            bottom = y1;
+        }
+        await fetch('http://localhost:5000/item/add?api_key=' + import.meta.env.VITE_API_KEY, {
+            method: 'POST',
+            body: JSON.stringify({
+                'file_id': selected,
+                'left': parseInt(left),
+                'top': parseInt(top),
+                'width': parseInt(right - left),
+                'height': parseInt(bottom - top)
+            })
         })
-    })
-    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
-        .then(response => response.json())
-        .then(data => annotatedFileData.set(data))
+        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+            .then(response => response.json())
+            .then(data => annotatedFileData.set(data))
+        x1 = null;
+        y1 = null;
+    } else {
+        x1 = mouse.offsetX * original_height / new_height;
+        y1 = mouse.offsetY * original_height / new_height;
+    }
 }
 
 let new_box;
@@ -89,9 +120,33 @@ function closeModal() {
     old_box = null;
     dialog.close();
 }
+
+async function checkTitles(file_id) {
+    await fetch('http://localhost:5000/title/check/?api_key=' + import.meta.env.VITE_API_KEY, {
+        method: 'POST',
+        body: JSON.stringify({
+            'file_id': file_id
+        })
+    })
+    await closeOut();
+}
+
+async function parseFile(file_id) {
+    await fetch('http://localhost:5000/file/parse/?api_key=' + import.meta.env.VITE_API_KEY, {
+        method: 'POST',
+        body: JSON.stringify({
+            'file_id': file_id
+        })
+    })
+    await closeOut();
+}
+
 </script>
 
 <main>
+    <button on:click={checkTitles(selected)}>
+        Check
+    </button>
     {#if $fileItems}
     <div>
         <img class="annotated-file"
@@ -182,8 +237,8 @@ function closeModal() {
                 </div>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
                     <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
-                        Top: <input type="range" min="{old_box.top - 100}" max="{old_box.bottom}" bind:value={new_box.top} />
-                        Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom + 100}" bind:value={new_box.bottom} />
+                        Top: <input type="range" min="{old_box.top - 500}" max="{old_box.bottom}" bind:value={new_box.top} />
+                        Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom + 500}" bind:value={new_box.bottom} />
                     </div>
                 </div>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
@@ -194,6 +249,19 @@ function closeModal() {
             </div>
             {/if}
         </dialog>
+        {#if x1 && y1}
+            <div style="
+                      position: absolute;
+                      transform: translate(-50%, -50%);
+                      left: { img?.offsetLeft + x1 * new_height / original_height }px;
+                      top: { img?.offsetTop + y1 * new_height / original_height }px;
+                      width: 10px;
+                      height: 10px;
+                      background: rgba(183, 52, 30, 0.5);
+                      border-radius: 5px;
+                      color: #000000"
+            ></div>
+        {/if}
         {#each $fileItems as fileItem, index}
             <div style="
                       position: absolute;

@@ -23,7 +23,7 @@
         <img src={bmtLogo} class="logo bmt" alt="BMT Logo" />
       </a>
     </div>
-    <h1 style="width: 75%;">BMT / New York Times</h1>
+    <h1 style="width: 75%;">New York Times Adverts</h1>
   </span>
   <SignedOut>
     <SignIn />
