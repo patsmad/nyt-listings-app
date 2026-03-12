@@ -45,9 +45,27 @@ async function updateVCRCode(box_id, file_date) {
     resetVCRCode();
 }
 
+async function checkVCRCode(box_id, file_id) {
+    let response = await fetch('http://localhost:5000/vcr_code/check_single?api_key=' + import.meta.env.VITE_API_KEY, {
+        method: 'POST',
+        body: JSON.stringify({
+            'box_id': box_id,
+            'file_id': file_id
+        })
+    })
+    let response_json = await response.json();
+    if (response_json.status == 'FAILED') {
+        new_vcr_code = response_json.vcr_code;
+    } else {
+        await closeOut();
+        resetVCRCode();
+    }
+}
+
 </script>
 
 <svelte:element this={tag}  on:dblclick={makeVCRCodeEditable(item?.vcr_code, index)}>
+    <div style="min-width:100px; max-width:100px;">
     {#if show_title}
         <b>VCR Code: </b>
     {/if}
@@ -55,7 +73,8 @@ async function updateVCRCode(box_id, file_date) {
         {item?.vcr_code}
     {:else}
         <form on:submit|preventDefault={(e) => updateVCRCode(item?.box_id, item?.file_date)}>
-            <input id="vcr_code_update" bind:value={new_vcr_code} />
+            <input id="vcr_code_update" bind:value={new_vcr_code} style="width:100px" />
         </form>
     {/if}
+    </div>
 </svelte:element>

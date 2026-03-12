@@ -47,7 +47,11 @@ h1 {
   text-align: center;
 }
 
-button, option, select, td, input {
+.tr-null {
+  background-color: #1a0000;
+}
+
+button, option, select, tr, input {
   background-color: #1a1a1a;
 }
 

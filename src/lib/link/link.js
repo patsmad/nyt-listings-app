@@ -76,6 +76,7 @@ class LinkFile {
         this.confirmed = confirmed;
 
         this.best_available_date = this.time ? this.time : this.file_date;
+        this.tr_class = this.vcr_code ? "": "tr-null";
     }
 
     scale() {

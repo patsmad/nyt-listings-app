@@ -1,23 +1,37 @@
-import { derived } from 'svelte/store';
-import { annotatedFile } from './annotated.js'
+import { writable, derived } from 'svelte/store';
 
-export const fileItems = derived(annotatedFile, annotatedFile => annotatedFile.items?.map(item => {
-    let boxes = item.boxes.map(box => {
-        let links = box.links.map(link => {
-            return new FileItem(item.id, annotatedFile.file_date, annotatedFile.id, item.x, item.y, box.id, box.left, box.top, box.width, box.height, box.channel, box.time, box.duration_minutes, box.vcr_code, link.id, link.link, link.title, link.year, link.rating, link.votes, link.confirmed)
+export const linkFilesData = writable([]);
+export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
+    return $linkFilesData.map(link_file => {
+            return new LinkFile(
+                link_file.file_id,
+                link_file.file,
+                link_file.file_date,
+                link_file.item_id,
+                link_file.x,
+                link_file.y,
+                link_file.box_id,
+                link_file.left,
+                link_file.top,
+                link_file.width,
+                link_file.height,
+                link_file.channel,
+                link_file.time,
+                link_file.duration_minutes,
+                link_file.vcr_code,
+                link_file.link_id
+            )
         })
-        return links.length > 0 ? links : [new FileItem(item.id, annotatedFile.file_date, annotatedFile.id, item.x, item.y, box.id, box.left, box.top, box.width, box.height, box.channel, box.time, box.duration_minutes, box.vcr_code, null, '', '', '', null, null, false)]
-    })
-    return boxes.length > 0 ? boxes : [new FileItem(item.id, annotatedFile.file_date, annotatedFile.id, item.x, item.y, null, null, null, null, null, null, null, null, null, null, '', '', '', null, null, false)]
-}).flat(2))
+});
 
 export const snippet_target = 400;
 
-export class FileItem {
-    constructor(item_id, file_date, file_id, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, title, year, rating, votes, confirmed) {
-        this.item_id = item_id;
+class LinkFile {
+    constructor(file_id, file, file_date, item_id, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id) {
+        this.file_id = file_id;
+        this.file = file;
         this.file_date = file_date;
-        this.file_id = file_id,
+        this.item_id = item_id;
         this.x = x;
         this.y = y;
         this.box_id = box_id;
@@ -30,14 +44,10 @@ export class FileItem {
         this.duration_minutes = duration_minutes;
         this.vcr_code = vcr_code;
         this.link_id = link_id;
-        this.link = link;
-        this.title = title;
-        this.year = year;
-        this.rating = rating;
-        this.votes = votes;
-        this.confirmed = confirmed
+        this.link = null;
 
         this.best_available_date = this.time ? this.time : this.file_date;
+        this.tr_class = this.vcr_code ? "": "tr-null";
     }
 
     scale() {
@@ -45,7 +55,7 @@ export class FileItem {
     }
 
     translation() {
-        if (this.scale() < 1) {
+        if (this.scale() <= 1) {
             return (this.width - snippet_target) / 2;
         } else {
             return 0;

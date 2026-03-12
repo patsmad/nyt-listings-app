@@ -43,6 +43,7 @@ async function updateChannel(box_id) {
 </script>
 
 <svelte:element this={tag} on:dblclick={makeChannelEditable(item?.channel, index)}>
+    <div style="min-width:100px; max-width:100px;">
     {#if show_title}
         <b>Channel: </b>
     {/if}
@@ -50,7 +51,8 @@ async function updateChannel(box_id) {
         {item?.channel}
     {:else}
         <form on:submit|preventDefault={ (e) => updateChannel(item?.box_id) }>
-            <input id="channel_update" bind:value={new_channel} />
+            <input id="channel_update" bind:value={new_channel} style="width:100px"/>
         </form>
     {/if}
+    </div>
 </svelte:element>
