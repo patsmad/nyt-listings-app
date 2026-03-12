@@ -22,4 +22,7 @@ This app is part of phase 2, an effort to make the curation of the gathered data
 
 At present you just run the app and it presents a splash page which connected to the BMT backend (https://github.com/patsmad/nyt-listings).
 
-The app uses svelte, vite, and typescript. Running instructed TBD.
+The app uses npm, vite, svelte. Simply run with:
+```
+npm run dev
+```
