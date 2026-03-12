@@ -1,16 +1,10 @@
 <script>
 import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
-import { linkFiles, linkFilesData, snippet_target } from './link.js';
-import Channel from '../update/Channel.svelte';
-import Confirmed from '../update/Confirmed.svelte';
+import { linkFiles, linkFilesData, snippet_target } from './empty_box.js';
 import Delete from '../update/Delete.svelte';
-import Duration from '../update/Duration.svelte';
 import Link from '../update/Link.svelte';
-import Time from '../update/Time.svelte';
-import VCRCode from '../update/VCRCode.svelte';
-
-export let selected;
+import Title from '../update/Title.svelte';
 
 let linkFilesList = derived(linkFiles, linkFiles => linkFiles.link_files??[]);
 
@@ -19,12 +13,12 @@ let active = 'time';
 let sortFnc = item => item.time_as_decimal();
 
 let sortLinkList = () => derived(
-    linkFilesList,
-    linkFilesList => linkFilesList?.filter(item => sortFnc(item) !== null).sort((itemA, itemB) => {
+    linkFiles,
+    linkFiles => linkFiles.filter(item => sortFnc(item) !== null).sort((itemA, itemB) => {
             if (sortFnc(itemA) > sortFnc(itemB)) { return -1 + 2 * asc; }
             if (sortFnc(itemA) < sortFnc(itemB)) { return 1 - 2 * asc; }
         return 0;
-    }).concat(linkFilesList?.filter(item => sortFnc(item) === null))
+    }).concat(linkFiles.filter(item => sortFnc(item) === null))
 );
 
 let sortedLinkList = sortLinkList();
@@ -65,7 +59,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+        await fetch('http://localhost:5000/empty_boxes/?api_key=' + import.meta.env.VITE_API_KEY)
             .then(response => response.json())
             .then(data => linkFilesData.set(data))
         sortedLinkList = sortLinkList();
@@ -76,7 +70,7 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch('http://localhost:5000/empty_boxes/?api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => linkFilesData.set(data))
     sortedLinkList = sortLinkList();
@@ -94,10 +88,7 @@ async function checkVCRCodeLink(link) {
 
 </script>
 
-<button on:click={checkVCRCodeLink(selected)}>
-    Check
-</button>
-{#if $linkFiles.link_files}
+{#if $linkFiles}
     <div>Count: {$sortedLinkList.length}</div>
 {/if}
 <table class="link-file-info">
@@ -116,11 +107,8 @@ async function checkVCRCodeLink(link) {
             <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.item_id, 'id')}>ID</th>
             <th class="isSortable {active === 'file' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.file, 'file')}>File</th>
             <th>Snippet</th>
-            <th class="isSortable {active === 'channel' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.channel, 'channel')}>Channel</th>
-            <th class="isSortable {active === 'time' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.time_as_decimal(), 'time')}>Time</th>
-            <th class="isSortable {active === 'duration' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.duration_minutes, 'duration')}>Duration (min.)</th>
-            <th class="isSortable {active === 'vcr_code' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.vcr_code, 'vcr_code')}>VCR Code</th>
-            <th class="isSortable {active === 'confirmed' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.confirmed, 'confirmed')}>Confirmed</th>
+            <th class="isSortable {active === 'width' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.width, 'width')}>Width</th>
+            <th class="isSortable {active === 'title' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.title, 'title')}>Title</th>
             <th>Link</th>
         </tr>
     </thead>
@@ -201,11 +189,8 @@ async function checkVCRCodeLink(link) {
                 </div>
             </td>
             {/if}
-            <Channel closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            <Time closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            <Duration closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            <VCRCode closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            <Confirmed closeOut={closeOut} item={linkFile} index={index}/>
+            <td>{linkFile.width}</td>
+            <Title closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             <Link closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             {/if}
         </tr>

@@ -2,15 +2,7 @@ import { writable, derived } from 'svelte/store';
 
 export const linkFilesData = writable([]);
 export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
-    return new LinkFiles(
-        new LinkInfo(
-            $linkFilesData.link_info?.link,
-            $linkFilesData.link_info?.title??'',
-            $linkFilesData.link_info?.year??'',
-            $linkFilesData.link_info?.rating??0.0,
-            $linkFilesData.link_info?.votes??0
-        ),
-        $linkFilesData.link_files?.map(link_file => {
+    return $linkFilesData.map(link_file => {
             return new LinkFile(
                 link_file.file_id,
                 link_file.file,
@@ -27,35 +19,15 @@ export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
                 link_file.time,
                 link_file.duration_minutes,
                 link_file.vcr_code,
-                link_file.link_id,
-                $linkFilesData.link_info?.link,
-                link_file.confirmed
+                link_file.link_id
             )
         })
-    )
 });
-
-class LinkFiles {
-  constructor(link_info, link_files) {
-    this.link_info = link_info;
-    this.link_files = link_files;
-  }
-}
-
-class LinkInfo {
-    constructor(link, title, year, rating, votes) {
-        this.link = link;
-        this.title = title;
-        this.year = year;
-        this.rating = rating;
-        this.votes = votes;
-    }
-}
 
 export const snippet_target = 400;
 
 class LinkFile {
-    constructor(file_id, file, file_date, item_id, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, confirmed) {
+    constructor(file_id, file, file_date, item_id, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id) {
         this.file_id = file_id;
         this.file = file;
         this.file_date = file_date;
@@ -72,8 +44,7 @@ class LinkFile {
         this.duration_minutes = duration_minutes;
         this.vcr_code = vcr_code;
         this.link_id = link_id;
-        this.link = link;
-        this.confirmed = confirmed;
+        this.link = null;
 
         this.best_available_date = this.time ? this.time : this.file_date;
         this.tr_class = this.vcr_code ? "": "tr-null";

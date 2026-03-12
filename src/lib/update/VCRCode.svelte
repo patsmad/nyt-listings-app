@@ -65,6 +65,7 @@ async function checkVCRCode(box_id, file_id) {
 </script>
 
 <svelte:element this={tag}  on:dblclick={makeVCRCodeEditable(item?.vcr_code, index)}>
+    <div style="min-width:100px; max-width:100px;">
     {#if show_title}
         <b>VCR Code: </b>
     {/if}
@@ -72,10 +73,8 @@ async function checkVCRCode(box_id, file_id) {
         {item?.vcr_code}
     {:else}
         <form on:submit|preventDefault={(e) => updateVCRCode(item?.box_id, item?.file_date)}>
-            <input id="vcr_code_update" bind:value={new_vcr_code} />
+            <input id="vcr_code_update" bind:value={new_vcr_code} style="width:100px" />
         </form>
-        <button on:click={checkVCRCode(item?.box_id, item?.file_id)}>
-            Check
-        </button>
     {/if}
+    </div>
 </svelte:element>
