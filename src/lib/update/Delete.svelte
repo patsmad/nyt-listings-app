@@ -19,7 +19,7 @@ function makeItemDeletable(index) {
 }
 
 async function deleteItem(item_id) {
-    await fetch('http://localhost:5000/item/delete?api_key=' + import.meta.env.VITE_API_KEY, {
+    await fetch(import.meta.env.VITE_API_HOST + ':5000/item/delete?api_key=' + import.meta.env.VITE_API_KEY, {
         method: 'POST',
         body: JSON.stringify({
             'id': item_id

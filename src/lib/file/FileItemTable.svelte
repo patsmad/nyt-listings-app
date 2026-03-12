@@ -48,7 +48,7 @@ function boxEditable(fileItem, index) {
 }
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
-        await fetch('http://localhost:5000/box/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/box/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'id': box_id,
@@ -58,7 +58,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
         sortedFileItems = sortFileItems();
@@ -69,7 +69,7 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + ':5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
     sortedFileItems = sortFileItems();

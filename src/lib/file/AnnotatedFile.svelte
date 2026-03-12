@@ -49,7 +49,7 @@ async function addItem(mouse) {
             top = y2;
             bottom = y1;
         }
-        await fetch('http://localhost:5000/item/add?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/item/add?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'file_id': selected,
@@ -59,7 +59,7 @@ async function addItem(mouse) {
                 'height': parseInt(bottom - top)
             })
         })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
         x1 = null;
@@ -80,7 +80,7 @@ function boxEditable(fileItem) {
 }
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
-        await fetch('http://localhost:5000/box/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/box/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'id': box_id,
@@ -90,7 +90,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
     }
@@ -98,7 +98,7 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + ':5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
     closeModal();
@@ -109,7 +109,7 @@ let modalFileItem;
 let modalPosterLink;
 function openModal(fileItem) {
     modalFileItem = fileItem;
-    modalPosterLink = 'http://localhost:5000/poster/?link=' + fileItem.link + '&api_key=' + import.meta.env.VITE_API_KEY
+    modalPosterLink = import.meta.env.VITE_API_HOST + ':5000/poster/?link=' + fileItem.link + '&api_key=' + import.meta.env.VITE_API_KEY
     new_box = fileItem.box();
     old_box = fileItem.box();
     dialog.showModal();

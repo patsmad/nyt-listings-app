@@ -8,7 +8,7 @@ export let selected;
 let titles = derived(titlesData, titlesData => titlesData.titles??[]);
 
 async function closeOut() {
-    await fetch('http://localhost:5000/title/?title=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + ':5000/title/?title=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => titlesData.set(data))
 }

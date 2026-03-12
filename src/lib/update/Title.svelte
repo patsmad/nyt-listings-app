@@ -27,7 +27,7 @@ function makeTitleEditable(title, index) {
 
 async function updateTitle(link_id) {
     if (new_title != old_title) {
-        await fetch('http://localhost:5000/title/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/title/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'id': link_id,
@@ -42,7 +42,7 @@ async function updateTitle(link_id) {
 
 async function addTitle(box_id) {
     if (new_title != '') {
-        await fetch('http://localhost:5000/title/add?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/title/add?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'box_id': box_id,

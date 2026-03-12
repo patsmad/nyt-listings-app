@@ -35,7 +35,7 @@ async function updateTime(box_id) {
     if (new_time != old_time) {
         let date = new Date(new_time)
         date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
-        await fetch('http://localhost:5000/time/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/time/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'id': box_id,

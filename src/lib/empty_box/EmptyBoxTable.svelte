@@ -33,7 +33,7 @@ function sortColumnFunction(fnc, activeTH) {
 }
 
 function getImgSrc(linkFile) {
-    return 'http://localhost:5000/img/?file_id=' + linkFile.file_id + '&api_key=' + import.meta.env.VITE_API_KEY +
+    return import.meta.env.VITE_API_HOST + ':5000/img/?file_id=' + linkFile.file_id + '&api_key=' + import.meta.env.VITE_API_KEY +
         '&box=' + linkFile.left + ',' + linkFile.top + ',' + linkFile.width + ',' + linkFile.height
 }
 
@@ -49,7 +49,7 @@ function boxEditable(linkFile, index) {
 }
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
-        await fetch('http://localhost:5000/box/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/box/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'id': box_id,
@@ -59,7 +59,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch('http://localhost:5000/empty_boxes/?api_key=' + import.meta.env.VITE_API_KEY)
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/empty_boxes/?api_key=' + import.meta.env.VITE_API_KEY)
             .then(response => response.json())
             .then(data => linkFilesData.set(data))
         sortedLinkList = sortLinkList();
@@ -70,14 +70,14 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch('http://localhost:5000/empty_boxes/?api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + ':5000/empty_boxes/?api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => linkFilesData.set(data))
     sortedLinkList = sortLinkList();
 }
 
 async function checkVCRCodeLink(link) {
-    await fetch('http://localhost:5000/vcr_code/check_link/?api_key=' + import.meta.env.VITE_API_KEY, {
+    await fetch(import.meta.env.VITE_API_HOST + ':5000/vcr_code/check_link/?api_key=' + import.meta.env.VITE_API_KEY, {
         method: 'POST',
         body: JSON.stringify({
             'link': link

@@ -27,7 +27,7 @@ if (selected) {
 
 onMount(async () => {
     annotatedFileData.set([]);
-    await fetch('http://localhost:5000/files/?api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + ':5000/files/?api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => files.set(data))
 });
@@ -36,10 +36,10 @@ let selectedFileIndex = derived(
     sortedFiles => sortedFiles.findIndex(file => file.id == selected)
 );
 async function handleSelected() {
-    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + ':5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
-    img_src = 'http://localhost:5000/img/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY
+    img_src = import.meta.env.VITE_API_HOST + ':5000/img/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY
     display = true;
 }
 </script>

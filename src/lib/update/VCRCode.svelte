@@ -30,7 +30,7 @@ async function updateVCRCode(box_id, file_date) {
     let date = new Date(file_date)
     date = new Date(date.toLocaleString('en-US', {timeZone: 'Greenwich'}));
     if (new_vcr_code != old_vcr_code) {
-        await fetch('http://localhost:5000/vcr_code/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/vcr_code/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'id': box_id,
@@ -46,7 +46,7 @@ async function updateVCRCode(box_id, file_date) {
 }
 
 async function checkVCRCode(box_id, file_id) {
-    let response = await fetch('http://localhost:5000/vcr_code/check_single?api_key=' + import.meta.env.VITE_API_KEY, {
+    let response = await fetch(import.meta.env.VITE_API_HOST + ':5000/vcr_code/check_single?api_key=' + import.meta.env.VITE_API_KEY, {
         method: 'POST',
         body: JSON.stringify({
             'box_id': box_id,

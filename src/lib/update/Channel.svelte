@@ -28,7 +28,7 @@ function makeChannelEditable(channel, index) {
 
 async function updateChannel(box_id) {
     if (new_channel != old_channel) {
-        await fetch('http://localhost:5000/channel/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/channel/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'id': box_id,

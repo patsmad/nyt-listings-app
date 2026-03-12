@@ -29,7 +29,7 @@ function makeLinkEditable(link, index) {
 
 async function updateLink(link_id) {
     if (new_link != old_link) {
-        await fetch('http://localhost:5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'id': link_id,
@@ -44,7 +44,7 @@ async function updateLink(link_id) {
 
 async function addLink(box_id) {
     if (new_link != '') {
-        await fetch('http://localhost:5000/link/add?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/link/add?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'box_id': box_id,

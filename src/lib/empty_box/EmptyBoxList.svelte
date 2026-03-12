@@ -4,7 +4,7 @@ import { linkFilesData } from './empty_box.js';
 import EmptyBoxTable from './EmptyBoxTable.svelte';
 
 function startUp()  {
-    fetch('http://localhost:5000/empty_boxes/?api_key=' + import.meta.env.VITE_API_KEY)
+    fetch('http://0.0.0.0:5000/empty_boxes/?api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => linkFilesData.set(data))
 }

@@ -8,7 +8,7 @@ export let selected;
 let years = derived(yearsData, yearsData => yearsData.years??[]);
 
 async function closeOut() {
-    await fetch('http://localhost:5000/year/?year=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + ':5000/year/?year=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
         .then(response => response.json())
         .then(data => yearsData.set(data))
 }

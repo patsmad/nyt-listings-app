@@ -28,7 +28,7 @@ function makeDurationEditable(duration, index) {
 
 async function updateDuration(box_id) {
     if (new_duration != old_duration) {
-        await fetch('http://localhost:5000/duration/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + ':5000/duration/update?api_key=' + import.meta.env.VITE_API_KEY, {
             method: 'POST',
             body: JSON.stringify({
                 'id': box_id,
