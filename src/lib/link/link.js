@@ -15,6 +15,8 @@ export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
                 link_file.file_id,
                 link_file.file,
                 link_file.file_date,
+                link_file.file_width,
+                link_file.file_height,
                 link_file.item_id,
                 link_file.x,
                 link_file.y,
@@ -52,13 +54,16 @@ class LinkInfo {
     }
 }
 
-export const snippet_target = 400;
+export const max_height = 250;
+export const max_width = 500;
 
 class LinkFile {
-    constructor(file_id, file, file_date, item_id, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, confirmed) {
+    constructor(file_id, file, file_date, file_width, file_height, item_id, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, confirmed) {
         this.file_id = file_id;
         this.file = file;
         this.file_date = file_date;
+        this.file_width = file_width;
+        this.file_height = file_height;
         this.item_id = item_id;
         this.x = x;
         this.y = y;
@@ -78,16 +83,12 @@ class LinkFile {
         this.best_available_date = this.time ? this.time : this.file_date;
     }
 
-    scale() {
-        return snippet_target / this.width;
+    size() {
+        return (this.width * this.height) / (this.file_width * this.file_height)
     }
 
-    translation() {
-        if (this.scale() <= 1) {
-            return (this.width - snippet_target) / 2;
-        } else {
-            return 0;
-        }
+    scale() {
+        return Math.min(max_width / this.width, max_height / this.height);
     }
 
     box() {
@@ -121,30 +122,22 @@ class Box {
     }
 
     scale() {
-        return snippet_target / this.width();
+        return Math.min(max_width / this.width(), max_height / this.height());
     }
 
-    scaled_height() {
-        return this.height() * this.scale();
+    translate_x() {
+        if (this.width() > max_width) {
+            return max_width / 2 - this.width() / 2;
+        } else {
+            return 0;
+        }
     }
 
-    scaled_width() {
-        return this.width() * this.scale();
-    }
-
-    translation() {
-        return -(this.width() - snippet_target) / 2;
+    translate_y() {
+        return max_height / 2 - this.height() / 2;
     }
 
     match(other) {
         return this.left == other.left && this.top == other.top && this.right == other.right && this.bottom == other.bottom;
-    }
-
-    largest_height() {
-        if (this.scale() < 1) {
-            return this.height();
-        } else {
-            return this.scaled_height();
-        }
     }
 }

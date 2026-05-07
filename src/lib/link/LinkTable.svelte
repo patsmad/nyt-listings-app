@@ -1,7 +1,7 @@
 <script>
 import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
-import { linkFiles, linkFilesData, snippet_target } from './link.js';
+import { linkFiles, linkFilesData, max_height, max_width } from './link.js';
 import Channel from '../update/Channel.svelte';
 import Confirmed from '../update/Confirmed.svelte';
 import Delete from '../update/Delete.svelte';
@@ -103,11 +103,7 @@ async function closeOut() {
             <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.item_id, 'id')}>ID</th>
             <th class="isSortable {active === 'file' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.file, 'file')}>File</th>
             <th>Snippet</th>
-            <th class="isSortable {active === 'channel' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.channel, 'channel')}>Channel</th>
-            <th class="isSortable {active === 'time' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.time_as_decimal(), 'time')}>Time</th>
-            <th class="isSortable {active === 'duration' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.duration_minutes, 'duration')}>Duration (min.)</th>
-            <th class="isSortable {active === 'vcr_code' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.vcr_code, 'vcr_code')}>VCR Code</th>
-            <th class="isSortable {active === 'confirmed' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.confirmed, 'confirmed')}>Confirmed</th>
+            <th>Size</th>
             <th>Link</th>
         </tr>
     </thead>
@@ -119,80 +115,88 @@ async function closeOut() {
             <td><a href="/file?file_id={linkFile.file_id}">{linkFile.file}</a></td>
             {#if linkFile.height}
             {#if index != editable_box}
-            <td class="snippet" style="height: {linkFile.scale() * linkFile.height}px; min-width: {snippet_target}px; max-width: {snippet_target}px;"
+            <td class="snippet"
+                style="
+                    min-width: {max_width}px;
+                    max-width: {max_width}px;
+                    min-height: {max_height}px;
+                    max-height: {max_height}px;
+                "
                 on:dblclick={boxEditable(linkFile, index)}
             >
-                <div class="snippet" style="height: {linkFile.height}px; position: relative; top: 0px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <img src={getImgSrc(linkFile)} style="
-                        width: {linkFile.width}px;
-                        height: {linkFile.height}px;
-                        scale: {linkFile.scale()};
-                        translate: -{linkFile.translation()}px 0px;
-                    " alt="Snippet for {linkFile.title} ({linkFile.file})"/>
-                    <div class="item"
-                         style="
-                              position: absolute;
-                              transform: translate(-50%, -50%);
-                              left: { (linkFile.x - linkFile.left) * linkFile.scale() }px;
-                              top: { (linkFile.y - linkFile.top) * linkFile.scale() + (linkFile.height * (1 - linkFile.scale())) / 2}px;
-                              width: 10px;
-                              height: 10px;
-                              background: rgba(183, 52, 30, 0.75);
-                              border-radius: 5px;
-                              color: #000000"
-                    ></div>
+                <div
+                    style="
+                        min-width: {max_width}px;
+                        max-width: {max_width}px;
+                        min-height: {max_height}px;
+                        max-height: {max_height}px;
+                    ">
+                    <img
+                        src={getImgSrc(linkFile)}
+                        style="
+                            display: flex;
+                            width: {linkFile.width * linkFile.scale()}px;
+                            height: {linkFile.height * linkFile.scale()}px;
+                            translate:
+                                {max_width / 2 - linkFile.width * linkFile.scale() / 2}px
+                                {max_height / 2 - linkFile.height * linkFile.scale() / 2}px;
+                        "
+                        alt="Snippet for {linkFile.title} ({linkFile.file})"
+                    />
                 </div>
             </td>
             {:else}
-            <td class="snippet" style="height: {new_box.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                <div class="snippet" style="height: {new_box.largest_height()}px; position: relative; top: 0px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="position: absolute; top: 0px;">
-                    <img src={getImgSrc(linkFile)} style="
-                        width: {new_box.width()}px;
-                        height: {new_box.height()}px;
-                        object-fit: none;
-                        object-position: {old_box.left - new_box.left}px {old_box.top - new_box.top}px;
-                        scale: {new_box.scale()};
-                        translate: {new_box.translation()}px {(new_box.largest_height() - new_box.height()) / 2}px;
-                    " alt="Snippet for {linkFile.title} ({linkFile.year})"/>
+            <div class="snippet" style="min-height: {max_height + 150}px; max-height: {max_height + 150}px; min-width: {max_width}px; max-width: {max_width}px;">
+                <td class="snippet"
+                    style="
+                        min-width: {max_width}px;
+                        max-width: {max_width}px;
+                        min-height: {max_height}px;
+                        max-height: {max_height}px;
+                    "
+                    on:dblclick={boxEditable(linkFile, index)}
+                >
+                    <div
+                        style="
+                            min-width: {max_width}px;
+                            max-width: {max_width}px;
+                            min-height: {max_height}px;
+                            max-height: {max_height}px;
+                        ">
+                        <img
+                            src={getImgSrc(linkFile)}
+                            style="
+                                width: {new_box.width()}px;
+                                height: {new_box.height()}px;
+                                scale: {new_box.scale()};
+                                object-fit: none;
+                                object-position: {old_box.left - new_box.left}px {old_box.top - new_box.top}px;
+                                translate: {new_box.translate_x()}px {new_box.translate_y()}px;
+                            "
+                            alt="Snippet for {linkFile.title} ({linkFile.file})"
+                        />
                     </div>
-                    <div class="item"
-                         style="
-                              position: absolute;
-                              transform: translate(-50%, -50%);
-                              left: { (linkFile.x - new_box.left) * new_box.scale() }px;
-                              top: { (linkFile.y - new_box.top) * new_box.scale() + (new_box.height() * (1 - new_box.scale())) / 2 + (new_box.largest_height() - new_box.height()) / 2}px;
-                              width: 10px;
-                              height: 10px;
-                              background: rgba(183, 52, 30, 0.75);
-                              border-radius: 5px;
-                              color: #000000"
-                    ></div>
-                </div>
-                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                </td>
+                <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
+                    <div style="max-height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
                         Left: <input type="range" min="{old_box.left}" max="{old_box.right}" bind:value={new_box.left} />
                         Right: <input type="range" min="{old_box.left}" max="{old_box.right}" bind:value={new_box.right} />
                     </div>
                 </div>
-                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
+                    <div style="max-height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
                         Top: <input type="range" min="{old_box.top}" max="{old_box.bottom}" bind:value={new_box.top} />
                         Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom}" bind:value={new_box.bottom} />
                     </div>
                 </div>
-                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
+                    <div style="height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
                         <button on:click={updateBox(linkFile.box_id)}>Submit</button>
                     </div>
                 </div>
-            </td>
+            </div>
             {/if}
-            <Channel closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            <Time closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            <Duration closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            <VCRCode closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
-            <Confirmed closeOut={closeOut} item={linkFile} index={index}/>
+            <td>{linkFile.size().toFixed(2)}</td>
             <Link closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
             {/if}
         </tr>

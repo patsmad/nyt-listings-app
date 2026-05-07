@@ -1,7 +1,7 @@
 <script>
 import { derived } from 'svelte/store'
 import { annotatedFileData } from './annotated.js'
-import { fileItems, snippet_target } from './file.js';
+import { fileItems, max_height, max_width } from './file.js';
 import Channel from '../update/Channel.svelte';
 import Confirmed from '../update/Confirmed.svelte';
 import Delete from '../update/Delete.svelte';
@@ -84,10 +84,6 @@ async function closeOut() {
             <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.item_id, 'id')}>ID</th>
             <th class="isSortable {active === 'confirmed' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.confirmed, 'confirmed')}>Confirmed</th>
             <th>Snippet</th>
-            <th class="isSortable {active === 'channel' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.channel, 'channel')}>Channel</th>
-            <th class="isSortable {active === 'time' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.time_as_decimal(), 'time')}>Time</th>
-            <th class="isSortable {active === 'duration' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.duration_minutes, 'duration')}>Duration (min.)</th>
-            <th class="isSortable {active === 'vcr_code' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.vcr_code, 'vcr_code')}>VCR Code</th>
             <th class="isSortable {active === 'title' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.title, 'title')}>Title</th>
             <th class="isSortable {active === 'year' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.year, 'year')}>Year</th>
             <th class="isSortable {active === 'rating' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.rating, 'rating')}>Rating</th>
@@ -102,81 +98,84 @@ async function closeOut() {
             <Delete closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             <Confirmed closeOut={closeOut} item={fileItem} index={index}/>
             {#if index != editable_box}
-            <td class="snippet" style="height: {fileItem.scale() * fileItem.height}px; min-width: {snippet_target}px; max-width: {snippet_target}px;"
+            <td class="snippet"
+                style="
+                    min-width: {max_width}px;
+                    max-width: {max_width}px;
+                    min-height: {max_height}px;
+                    max-height: {max_height}px;
+                "
                 on:dblclick={boxEditable(fileItem, index)}
             >
-                <div class="snippet" style="height: {fileItem.height}px; position: relative; top: 0px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
+                <div
+                    style="
+                        min-width: {max_width}px;
+                        max-width: {max_width}px;
+                        min-height: {max_height}px;
+                        max-height: {max_height}px;
+                    ">
                     <img src={img_src} style="
                         width: {fileItem.width}px;
                         height: {fileItem.height}px;
+                        scale: {fileItem.scale()};
                         object-fit: none;
                         object-position: -{fileItem.left}px -{fileItem.top}px;
-                        scale: {fileItem.scale()};
-                        translate: -{fileItem.translation()}px 0px;
-                    " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
-                    <div class="item"
-                         style="
-                              position: absolute;
-                              transform: translate(-50%, -50%);
-                              left: { (fileItem.x - fileItem.left) * fileItem.scale() }px;
-                              top: { (fileItem.y - fileItem.top) * fileItem.scale() + (fileItem.height * (1 - fileItem.scale())) / 2}px;
-                              width: 10px;
-                              height: 10px;
-                              background: rgba(183, 52, 30, 0.75);
-                              border-radius: 5px;
-                              color: #000000"
-                    ></div>
+                        translate: {fileItem.translate_x()}px {fileItem.translate_y()}px;
+                    " alt="Snippet for {fileItem.title} ({fileItem.year})"
+                    />
                 </div>
             </td>
             {:else}
-            <td class="snippet" style="height: {new_box.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                <div class="snippet" style="height: {new_box.largest_height()}px; position: relative; top: 0px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="position: absolute; top: 0px;">
-                    <img src={img_src} style="
-                        width: {new_box.width()}px;
-                        height: {new_box.height()}px;
-                        object-fit: none;
-                        object-position: -{new_box.left}px -{new_box.top}px;
-                        scale: {new_box.scale()};
-                        translate: {new_box.translation()}px {(new_box.largest_height() - new_box.height()) / 2}px;
-                    " alt="Snippet for {fileItem.title} ({fileItem.year})"/>
+            <div class="snippet" style="min-height: {max_height + 150}px; max-height: {max_height + 150}px; min-width: {max_width}px; max-width: {max_width}px;">
+                <td class="snippet"
+                    style="
+                        min-width: {max_width}px;
+                        max-width: {max_width}px;
+                        min-height: {max_height}px;
+                        max-height: {max_height}px;
+                    "
+                    on:dblclick={boxEditable(fileItem, index)}
+                >
+                    <div
+                        style="
+                            min-width: {max_width}px;
+                            max-width: {max_width}px;
+                            min-height: {max_height}px;
+                            max-height: {max_height}px;
+                        ">
+                        <img
+                            src={img_src}
+                            style="
+                                width: {new_box.width()}px;
+                                height: {new_box.height()}px;
+                                scale: {new_box.scale()};
+                                object-fit: none;
+                                object-position: -{new_box.left}px -{new_box.top}px;
+                                translate: {new_box.translate_x()}px {new_box.translate_y()}px;
+                            "
+                            alt="Snippet for {fileItem.title} ({fileItem.file})"
+                        />
                     </div>
-                    <div class="item"
-                         style="
-                              position: absolute;
-                              transform: translate(-50%, -50%);
-                              left: { (fileItem.x - new_box.left) * new_box.scale()}px;
-                              top: { (fileItem.y - new_box.top) * new_box.scale() + (new_box.height() * (1 - new_box.scale())) / 2 + (new_box.largest_height() - new_box.height()) / 2 }px;
-                              width: 10px;
-                              height: 10px;
-                              background: rgba(183, 52, 30, 0.75);
-                              border-radius: 5px;
-                              color: #000000"
-                    ></div>
-                </div>
-                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                </td>
+                <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
+                    <div style="max-height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
                         Left: <input type="range" min="{old_box.left - 500}" max="{old_box.right}" bind:value={new_box.left} />
                         Right: <input type="range" min="{old_box.left}" max="{old_box.right + 500}" bind:value={new_box.right} />
                     </div>
                 </div>
-                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
+                    <div style="max-height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
                         Top: <input type="range" min="{old_box.top - 100}" max="{old_box.bottom}" bind:value={new_box.top} />
                         Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom + 100}" bind:value={new_box.bottom} />
                     </div>
                 </div>
-                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
+                    <div style="height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
                         <button on:click={updateBox(fileItem.box_id)}>Submit</button>
                     </div>
                 </div>
-            </td>
+            </div>
             {/if}
-            <Channel closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            <Time closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            <Duration closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            <VCRCode closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             <Title closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>

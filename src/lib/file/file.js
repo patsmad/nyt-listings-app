@@ -11,7 +11,8 @@ export const fileItems = derived(annotatedFile, annotatedFile => annotatedFile.i
     return boxes.length > 0 ? boxes : [new FileItem(item.id, annotatedFile.file_date, item.x, item.y, null, null, null, null, null, null, null, null, null, null, '', '', '', null, null, false)]
 }).flat(2))
 
-export const snippet_target = 400;
+export const max_height = 250;
+export const max_width = 500;
 
 export class FileItem {
     constructor(item_id, file_date, x, y, box_id, left, top, width, height, channel, time, duration_minutes, vcr_code, link_id, link, title, year, rating, votes, confirmed) {
@@ -40,15 +41,19 @@ export class FileItem {
     }
 
     scale() {
-        return snippet_target / this.width;
+        return Math.min(max_width / this.width, max_height / this.height);
     }
 
-    translation() {
-        if (this.scale() < 1) {
-            return (this.width - snippet_target) / 2;
+    translate_x() {
+        if (this.width > max_width) {
+            return max_width / 2 - this.width / 2;
         } else {
             return 0;
         }
+    }
+
+    translate_y() {
+        return max_height / 2 - this.height / 2;
     }
 
     box() {
@@ -82,30 +87,22 @@ class Box {
     }
 
     scale() {
-        return snippet_target / this.width();
+        return Math.min(max_width / this.width(), max_height / this.height());
     }
 
-    scaled_height() {
-        return this.height() * this.scale();
+    translate_x() {
+        if (this.width() > max_width) {
+            return max_width / 2 - this.width() / 2;
+        } else {
+            return 0;
+        }
     }
 
-    scaled_width() {
-        return this.width() * this.scale();
-    }
-
-    translation() {
-        return -(this.width() - snippet_target) / 2;
+    translate_y() {
+        return max_height / 2 - this.height() / 2;
     }
 
     match(other) {
         return this.left == other.left && this.top == other.top && this.right == other.right && this.bottom == other.bottom;
-    }
-
-    largest_height() {
-        if (this.scale() < 1) {
-            return this.height();
-        } else {
-            return this.scaled_height();
-        }
     }
 }

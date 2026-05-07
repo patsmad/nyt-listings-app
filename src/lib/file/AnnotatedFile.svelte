@@ -1,6 +1,6 @@
 <script>
 import { annotatedFileData } from './annotated.js';
-import { fileItems, snippet_target } from './file.js';
+import { fileItems, max_width, max_height } from './file.js';
 import Channel from '../update/Channel.svelte';
 import Delete from '../update/Delete.svelte';
 import Duration from '../update/Duration.svelte';
@@ -18,6 +18,15 @@ let new_height;
 let display_img = false;
 let x1;
 let y1;
+let availableTitles;
+
+async function setAvailableTitles() {
+    if (!availableTitles) {
+        await fetch('http://localhost:5000/available_titles/?api_key=' + import.meta.env.VITE_API_KEY)
+            .then(response => response.json())
+            .then(data => availableTitles = data)
+    }
+}
 
 function loadImg() {
     if (img) {
@@ -112,6 +121,7 @@ function openModal(fileItem) {
     modalPosterLink = 'http://localhost:5000/poster/?link=' + fileItem.link + '&api_key=' + import.meta.env.VITE_API_KEY
     new_box = fileItem.box();
     old_box = fileItem.box();
+    setAvailableTitles();
     dialog.showModal();
 }
 
@@ -159,7 +169,7 @@ async function parseFile(file_id) {
          />
         <dialog bind:this={dialog} on:click|self={() => closeModal()} on:keypress={(e) => null}>
             {#if new_box}
-            <div class="snippet" style="height: {new_box?.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px; display: inline-block;">
+            <div class="snippet" style="height: {max_height + 150}px; min-width: {max_width}px; max-width: {max_width}px; display: inline-block;">
                 {#if modalFileItem?.link}
                     <a href={modalFileItem?.link} target="_blank">
                         <img src={modalPosterLink} alt="Poster for {modalFileItem.title} ({modalFileItem.year})"/>
@@ -167,82 +177,52 @@ async function parseFile(file_id) {
                 {:else}
                     <img src={modalPosterLink} alt="Poster for {modalFileItem.title} ({modalFileItem.year})"/>
                 {/if}
-                <div style="width: 400px;">
+                <div style="min-width: {max_width}px; max-width: {max_width}px;">
                     <Link closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
                 </div>
-                <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left">
-                        <Title closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
-                    </div>
-                    <div style="width: 150px; display: inline-block;" align="left">
-                        <Channel closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
-                    </div>
+                <div style="min-width: {max_width}px; max-width: {max_width}px;">
+                    <Title closeOut={closeOut} item={modalFileItem} index=1 show_title={true} availableTitles={availableTitles}/>
                 </div>
-                <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left">
-                        <b>Year: </b>{modalFileItem?.year}
-                    </div>
-                    <div style="width: 150px; display: inline-block;" align="left">
-                        <Time closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
-                    </div>
+                <div style="min-width: {max_width}px; max-width: {max_width}px;">
+                    <b>Year: </b>{modalFileItem?.year}
                 </div>
-                <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left">
-                        <b>Rating: </b>{modalFileItem?.rating}
-                    </div>
-                    <div style="width: 150px; display: inline-block;" align="left">
-                        <Duration closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
-                    </div>
+                <div style="min-width: {max_width}px; max-width: {max_width}px;">
+                    <b>Rating: </b>{modalFileItem?.rating}
                 </div>
-                <div style="width: 400px;">
-                    <div style="width: 200px; display: inline-block;" align="left">
-                        <b>Votes: </b>{modalFileItem?.votes}
-                    </div>
-                    <div style="width: 150px; display: inline-block;" align="left">
-                        <VCRCode closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
-                    </div>
+                <div style="min-width: {max_width}px; max-width: {max_width}px;">
+                    <b>Votes: </b>{modalFileItem?.votes}
                 </div>
                 <Delete  closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
             </div>
-            <div class="snippet" style="height: {new_box?.largest_height() + 150}px; min-width: {snippet_target}px; max-width: {snippet_target}px; display: inline-block;">
-                <div class="snippet" style="height: {new_box?.largest_height()}px; position: relative; top: 0px; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="position: absolute; top: 0px;">
-                    <img src={img_src} style="
-                        width: {new_box.width()}px;
-                        height: {new_box.height()}px;
-                        object-fit: none;
-                        object-position: -{new_box.left}px -{new_box.top}px;
-                        scale: {new_box.scale()};
-                        translate: {new_box.translation()}px {(new_box.largest_height() - new_box.height()) / 2}px;
-                    " alt="Snippet for {modalFileItem?.title} ({modalFileItem?.year})"/>
-                    </div>
-                    <div class="item"
-                         style="
-                              position: absolute;
-                              transform: translate(-50%, -50%);
-                              left: { (modalFileItem?.x - new_box.left) * new_box.scale()}px;
-                              top: { (modalFileItem?.y - new_box.top) * new_box.scale() + (new_box.height() * (1 - new_box.scale())) / 2 + (new_box.largest_height() - new_box.height()) / 2 }px;
-                              width: 10px;
-                              height: 10px;
-                              background: rgba(183, 52, 30, 0.75);
-                              border-radius: 5px;
-                              color: #000000"
-                    ></div>
+            <div class="snippet" style="height: {max_height+ 150}px; min-width: {max_width}px; max-width: {max_width}px; display: inline-block; overflow: hidden;">
+                <div class="snippet" style="min-height: {max_height}px; max-height: {max_height}px; min-width: {max_width}px; max-width: {max_width}px;">
+                    <img
+                        src={img_src}
+                        style="
+                            width: {new_box.width()}px;
+                            height: {new_box.height()}px;
+                            scale: {new_box.scale()};
+                            object-fit: none;
+                            object-position: -{new_box.left}px -{new_box.top}px;
+                            translate: {new_box.translate_x()}px {new_box.translate_y()}px;
+                        "
+                        alt="Snippet for {modalFileItem.title} ({modalFileItem.file})"
+                    />
                 </div>
-                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
+                    <div style="max-height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
                         Left: <input type="range" min="{old_box.left - 500}" max="{old_box.right}" bind:value={new_box.left} />
                         Right: <input type="range" min="{old_box.left}" max="{old_box.right + 500}" bind:value={new_box.right} />
                     </div>
                 </div>
-                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="max-height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
+                    <div style="max-height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
                         Top: <input type="range" min="{old_box.top - 500}" max="{old_box.bottom}" bind:value={new_box.top} />
                         Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom + 500}" bind:value={new_box.bottom} />
                     </div>
                 </div>
-                <div class="snippet" style="height: 50px; position: relative; min-width: {snippet_target}px; max-width: {snippet_target}px;">
-                    <div style="height: 50px;  width: {snippet_target}px; position: absolute; bottom: 0px;">
+                <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
+                    <div style="height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
                         <button on:click={updateBox(modalFileItem.box_id)}>Submit</button>
                     </div>
                 </div>
@@ -263,28 +243,13 @@ async function parseFile(file_id) {
             ></div>
         {/if}
         {#each $fileItems as fileItem, index}
-            <div style="
-                      position: absolute;
-                      transform: translate(-50%, -50%);
-                      left: { img?.offsetLeft + fileItem.x * new_height / original_height }px;
-                      top: { img?.offsetTop + fileItem.y * new_height / original_height }px;
-                      width: 10px;
-                      height: 10px;
-                      background: { fileItem.link == '' ? 'rgba(17, 123, 183, 0.35)'  : 'rgba(183, 52, 30, 0.5)' };
-                      border-radius: 5px;
-                      color: #000000"
-            ></div>
             <button class="box" style="
                       position: absolute;
                       left: { img?.offsetLeft + fileItem.left * new_height / original_height - 1 }px;
                       top: { img?.offsetTop + fileItem.top * new_height / original_height - 1 }px;
                       width: {fileItem.width * new_height / original_height + 2}px;
                       height: {fileItem.height * new_height / original_height + 2}px;
-                      background: {fileItem.link == '' ? 'rgba(183, 52, 30, 0.5)' :
-                        (fileItem.vcr_code === null ?
-                            (fileItem.channel !== null || fileItem.time !== null || fileItem.duration_minutes !== null ?
-                                'repeating-linear-gradient(45deg, rgba(17, 123, 183, 0.35), rgba(17, 123, 183, 0.35) 10%, rgb(300, 300, 300, 0.30) 11%, rgb(300, 300, 300, 0.30) 20%)' : 'rgb(223, 203, 90, 0.30)'
-                            ) : 'rgba(17, 123, 183, 0.35)') };
+                      background: {fileItem.link == '' ? 'rgba(183, 52, 30, 0.5)' : 'rgba(17, 123, 183, 0.35)' };
                       border-radius: 0px;
                       padding-top: 0px;
                       padding-bottom: 0px;

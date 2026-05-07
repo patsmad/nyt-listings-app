@@ -3,6 +3,8 @@ export let item;
 export let index;
 export let closeOut;
 export let show_title;
+export let availableTitles;
+let filteredAvailableTitles = [];
 
 let tag = show_title? "div" : "td";
 
@@ -23,6 +25,18 @@ function makeTitleEditable(title, index) {
         new_title = title;
         old_title = title;
     }
+}
+
+const filterAvailableTitles = () => {
+	let storageArr = []
+	if (new_title) {
+		availableTitles.forEach(availableTitle => {
+			 if (availableTitle.title.toLowerCase().startsWith(new_title.toLowerCase())) {
+				 storageArr = [...storageArr, availableTitle];
+			 }
+		});
+	}
+	filteredAvailableTitles = storageArr;
 }
 
 async function updateTitle(link_id) {
@@ -55,6 +69,32 @@ async function addTitle(box_id) {
     resetTitle();
 }
 
+async function addOrUpdateTitle(item, available_link) {
+    if (available_link != '') {
+        if (item.link === null || item.link == "") {
+            await fetch('http://localhost:5000/link/add?api_key=' + import.meta.env.VITE_API_KEY, {
+                method: 'POST',
+                body: JSON.stringify({
+                    'box_id': item.box_id,
+                    'link': available_link,
+                    'confirmed': true
+                })
+            })
+        } else {
+            await fetch('http://localhost:5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
+                method: 'POST',
+                body: JSON.stringify({
+                    'id': item.link_id,
+                    'link': available_link,
+                    'confirmed': true
+                })
+            })
+        }
+        await closeOut();
+    }
+    resetTitle();
+}
+
 </script>
 
 <svelte:element this={tag} on:dblclick={makeTitleEditable(item?.title, index)}>
@@ -67,12 +107,19 @@ async function addTitle(box_id) {
     {#if show_title}<b>Title: </b>{/if}
     {#if item?.link}
         <form on:submit|preventDefault={(e) => updateTitle(item?.link_id)}>
-            <input bind:value={new_title} />
+            <input bind:value={new_title} on:input={filterAvailableTitles}/>
         </form>
     {:else}
         <form on:submit|preventDefault={(e) => addTitle(item?.box_id)}>
-            <input bind:value={new_title} />
+            <input bind:value={new_title} on:input={filterAvailableTitles}/>
         </form>
+    {/if}
+    {#if filteredAvailableTitles.length > 0}
+        <div style="max-height: 200px; overflow-y: auto;">
+        {#each filteredAvailableTitles as availableTitle}
+            <ul on:dblclick={() => addOrUpdateTitle(item, availableTitle.link)}>{availableTitle.search_str}</ul>
+        {/each}
+        </div>
     {/if}
 {/if}
 </svelte:element>
