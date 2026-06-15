@@ -4,7 +4,8 @@
     import LinkList from './lib/link/LinkList.svelte'
     import TitleList from './lib/title/TitleList.svelte'
     import YearList from './lib/year/YearList.svelte'
-    import { ClerkProvider, SignIn, UserButton, SignedIn, SignedOut} from './lib/clerk/index.js';
+    import EmptyBoxList from './lib/empty_box/EmptyBoxList.svelte'
+    import { ClerkProvider, SignIn, UserButton, SignedIn, SignedOut } from './lib/clerk/index.js';
 
     let url = new URL(window.location);
     let page = url.pathname;
@@ -34,6 +35,7 @@
   <a class="btn" href="/link"><button>Link Search</button></a>
   <a class="btn" href="/title"><button>Title Search</button></a>
   <a class="btn" href="/year"><button>Year Search</button></a>
+  <a class="btn" href="/empty_box"><button>Empty boxes</button></a>
   </span>
 
   {#if page === '/file' || page === '/'}
@@ -54,6 +56,11 @@
   {#if page === '/year'}
       <div class="card">
         <YearList />
+      </div>
+  {/if}
+  {#if page === '/empty_box'}
+      <div class="card">
+        <EmptyBoxList />
       </div>
   {/if}
   </SignedIn>

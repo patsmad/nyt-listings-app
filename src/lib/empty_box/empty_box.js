@@ -2,21 +2,11 @@ import { writable, derived } from 'svelte/store';
 
 export const linkFilesData = writable([]);
 export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
-    return new LinkFiles(
-        new LinkInfo(
-            $linkFilesData.link_info?.link,
-            $linkFilesData.link_info?.title??'',
-            $linkFilesData.link_info?.year??'',
-            $linkFilesData.link_info?.rating??0.0,
-            $linkFilesData.link_info?.votes??0
-        ),
-        $linkFilesData.link_files?.map(link_file => {
+    return $linkFilesData.map(link_file => {
             return new LinkFile(
                 link_file.file_id,
                 link_file.file,
                 link_file.file_date,
-                link_file.file_width,
-                link_file.file_height,
                 link_file.item_id,
                 link_file.x,
                 link_file.y,
@@ -25,41 +15,19 @@ export const linkFiles = derived(linkFilesData, ($linkFilesData) => {
                 link_file.top,
                 link_file.width,
                 link_file.height,
-                link_file.link_id,
-                $linkFilesData.link_info?.link,
-                link_file.confirmed
+                link_file.link_id
             )
         })
-    )
 });
-
-class LinkFiles {
-  constructor(link_info, link_files) {
-    this.link_info = link_info;
-    this.link_files = link_files;
-  }
-}
-
-class LinkInfo {
-    constructor(link, title, year, rating, votes) {
-        this.link = link;
-        this.title = title;
-        this.year = year;
-        this.rating = rating;
-        this.votes = votes;
-    }
-}
 
 export const max_height = 250;
 export const max_width = 500;
 
 class LinkFile {
-    constructor(file_id, file, file_date, file_width, file_height, item_id, x, y, box_id, left, top, width, height, link_id, link, confirmed) {
+    constructor(file_id, file, file_date, item_id, x, y, box_id, left, top, width, height, link_id) {
         this.file_id = file_id;
         this.file = file;
         this.file_date = file_date;
-        this.file_width = file_width;
-        this.file_height = file_height;
         this.item_id = item_id;
         this.x = x;
         this.y = y;
@@ -69,8 +37,7 @@ class LinkFile {
         this.width = width;
         this.height = height;
         this.link_id = link_id;
-        this.link = link;
-        this.confirmed = confirmed;
+        this.link = null;
 
         this.best_available_date = this.time ? this.time : this.file_date;
     }

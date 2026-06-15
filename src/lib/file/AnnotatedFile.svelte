@@ -1,13 +1,9 @@
 <script>
 import { annotatedFileData } from './annotated.js';
 import { fileItems, max_width, max_height } from './file.js';
-import Channel from '../update/Channel.svelte';
 import Delete from '../update/Delete.svelte';
-import Duration from '../update/Duration.svelte';
 import Link from '../update/Link.svelte';
-import Time from '../update/Time.svelte';
 import Title from '../update/Title.svelte';
-import VCRCode from '../update/VCRCode.svelte';
 
 export let img_src;
 export let selected;
@@ -22,7 +18,7 @@ let availableTitles;
 
 async function setAvailableTitles() {
     if (!availableTitles) {
-        await fetch('http://localhost:5000/available_titles/?api_key=' + import.meta.env.VITE_API_KEY)
+        await fetch(import.meta.env.VITE_API_HOST + '/available_titles/', {credentials: 'include'})
             .then(response => response.json())
             .then(data => availableTitles = data)
     }
@@ -58,8 +54,9 @@ async function addItem(mouse) {
             top = y2;
             bottom = y1;
         }
-        await fetch('http://localhost:5000/item/add?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + '/item/add/', {
             method: 'POST',
+            credentials: 'include',
             body: JSON.stringify({
                 'file_id': selected,
                 'left': parseInt(left),
@@ -68,7 +65,7 @@ async function addItem(mouse) {
                 'height': parseInt(bottom - top)
             })
         })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
         x1 = null;
@@ -89,8 +86,9 @@ function boxEditable(fileItem) {
 }
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
-        await fetch('http://localhost:5000/box/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + '/box/update/', {
             method: 'POST',
+            credentials: 'include',
             body: JSON.stringify({
                 'id': box_id,
                 'left': new_box.left,
@@ -99,7 +97,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+        await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
     }
@@ -107,7 +105,7 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
     closeModal();
@@ -118,7 +116,7 @@ let modalFileItem;
 let modalPosterLink;
 function openModal(fileItem) {
     modalFileItem = fileItem;
-    modalPosterLink = 'http://localhost:5000/poster/?link=' + fileItem.link + '&api_key=' + import.meta.env.VITE_API_KEY
+    modalPosterLink = import.meta.env.VITE_API_HOST + '/poster/?link=' + fileItem.link
     new_box = fileItem.box();
     old_box = fileItem.box();
     setAvailableTitles();
@@ -132,18 +130,9 @@ function closeModal() {
 }
 
 async function checkTitles(file_id) {
-    await fetch('http://localhost:5000/title/check/?api_key=' + import.meta.env.VITE_API_KEY, {
+    await fetch(import.meta.env.VITE_API_HOST + '/title/check/', {
         method: 'POST',
-        body: JSON.stringify({
-            'file_id': file_id
-        })
-    })
-    await closeOut();
-}
-
-async function parseFile(file_id) {
-    await fetch('http://localhost:5000/file/parse/?api_key=' + import.meta.env.VITE_API_KEY, {
-        method: 'POST',
+        credentials: 'include',
         body: JSON.stringify({
             'file_id': file_id
         })

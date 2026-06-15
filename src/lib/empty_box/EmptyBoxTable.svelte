@@ -1,47 +1,55 @@
 <script>
+import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
-import { annotatedFileData } from './annotated.js'
-import { fileItems, max_height, max_width } from './file.js';
-import Confirmed from '../update/Confirmed.svelte';
+import { linkFiles, linkFilesData, max_width, max_height } from './empty_box.js';
 import Delete from '../update/Delete.svelte';
 import Link from '../update/Link.svelte';
 import Title from '../update/Title.svelte';
 
-export let img_src;
-export let selected;
+export let availableTitles;
+
+let linkFilesList = derived(linkFiles, linkFiles => linkFiles.link_files??[]);
 
 let asc = true;
 let active = 'time';
 let sortFnc = item => item.time_as_decimal();
-let sortFileItems = () => derived(
-    fileItems,
-    fileItems => fileItems?.filter(item => sortFnc(item) !== null).sort((itemA, itemB) => {
+
+let sortLinkList = () => derived(
+    linkFiles,
+    linkFiles => linkFiles.filter(item => sortFnc(item) !== null).sort((itemA, itemB) => {
             if (sortFnc(itemA) > sortFnc(itemB)) { return -1 + 2 * asc; }
             if (sortFnc(itemA) < sortFnc(itemB)) { return 1 - 2 * asc; }
         return 0;
-    }).concat(fileItems?.filter(item => sortFnc(item) === null))
+    }).concat(linkFiles.filter(item => sortFnc(item) === null))
 );
-let sortedFileItems = sortFileItems();
+
+let sortedLinkList = sortLinkList();
 
 function sortColumnFunction(fnc, activeTH) {
     return () => {
         asc = !asc || active !== activeTH;
         sortFnc = fnc;
         active = activeTH;
-        sortedFileItems = sortFileItems();
+        sortedLinkList = sortLinkList();
     }
+}
+
+function getImgSrc(linkFile) {
+    return import.meta.env.VITE_API_HOST + '/img/?file_id=' + linkFile.file_id +
+        '&box=' + linkFile.left + ',' + linkFile.top + ',' + linkFile.width + ',' + linkFile.height
 }
 
 let editable_box=-1;
 let new_box = [];
 let old_box = [];
-function boxEditable(fileItem, index) {
+function boxEditable(linkFile, index) {
     return () => {
         editable_box = index;
-        new_box = fileItem.box();
-        old_box = fileItem.box();
+        new_box = linkFile.box();
+        old_box = linkFile.box();
     }
 }
+
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
         await fetch(import.meta.env.VITE_API_HOST + '/box/update/', {
@@ -55,10 +63,10 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
+        await fetch(import.meta.env.VITE_API_HOST + '/empty_boxes/', {credentials: 'include'})
             .then(response => response.json())
-            .then(data => annotatedFileData.set(data))
-        sortedFileItems = sortFileItems();
+            .then(data => linkFilesData.set(data))
+        sortedLinkList = sortLinkList();
     }
     editable_box = -1;
     new_box = [];
@@ -66,34 +74,34 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
+    await fetch(import.meta.env.VITE_API_HOST + '/empty_boxes/', {credentials: 'include'})
         .then(response => response.json())
-        .then(data => annotatedFileData.set(data))
-    sortedFileItems = sortFileItems();
+        .then(data => linkFilesData.set(data))
+    sortedLinkList = sortLinkList();
 }
 
 </script>
 
-<div>Count: {$sortedFileItems?.length}</div>
-<table class="file-item-table">
+{#if $linkFiles}
+    <div>Count: {$sortedLinkList.length}</div>
+{/if}
+<table class="link-file-table">
     <thead>
         <tr>
-            <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.item_id, 'id')}>ID</th>
-            <th class="isSortable {active === 'confirmed' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.confirmed, 'confirmed')}>Confirmed</th>
+            <th class="isSortable {active === 'id' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.item_id, 'id')}>ID</th>
+            <th class="isSortable {active === 'file' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(linkFile => linkFile.file, 'file')}>File</th>
             <th>Snippet</th>
             <th class="isSortable {active === 'title' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.title, 'title')}>Title</th>
-            <th class="isSortable {active === 'year' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.year, 'year')}>Year</th>
-            <th class="isSortable {active === 'rating' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.rating, 'rating')}>Rating</th>
-            <th class="isSortable {active === 'votes' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.votes, 'votes')}>Votes</th>
-            <th class="isSortable {active === 'link' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.link, 'link')}>Link</th>
+            <th>Link</th>
         </tr>
     </thead>
     <tbody>
-    {#if $sortedFileItems}
-        {#each $sortedFileItems as fileItem, index}
+    {#if $sortedLinkList}
+        {#each $sortedLinkList as linkFile, index}
         <tr>
-            <Delete closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            <Confirmed closeOut={closeOut} item={fileItem} index={index}/>
+            <Delete  closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
+            <td><a href="/file?file_id={linkFile.file_id}">{linkFile.file}</a></td>
+            {#if linkFile.height}
             {#if index != editable_box}
             <td class="snippet"
                 style="
@@ -102,7 +110,7 @@ async function closeOut() {
                     min-height: {max_height}px;
                     max-height: {max_height}px;
                 "
-                on:dblclick={boxEditable(fileItem, index)}
+                on:dblclick={boxEditable(linkFile, index)}
             >
                 <div
                     style="
@@ -111,14 +119,17 @@ async function closeOut() {
                         min-height: {max_height}px;
                         max-height: {max_height}px;
                     ">
-                    <img src={img_src} style="
-                        width: {fileItem.width}px;
-                        height: {fileItem.height}px;
-                        scale: {fileItem.scale()};
-                        object-fit: none;
-                        object-position: -{fileItem.left}px -{fileItem.top}px;
-                        translate: {fileItem.translate_x()}px {fileItem.translate_y()}px;
-                    " alt="Snippet for {fileItem.title} ({fileItem.year})"
+                    <img
+                        src={getImgSrc(linkFile)}
+                        style="
+                            display: flex;
+                            width: {linkFile.width * linkFile.scale()}px;
+                            height: {linkFile.height * linkFile.scale()}px;
+                            translate:
+                                {max_width / 2 - linkFile.width * linkFile.scale() / 2}px
+                                {max_height / 2 - linkFile.height * linkFile.scale() / 2}px;
+                        "
+                        alt="Snippet for {linkFile.title} ({linkFile.file})"
                     />
                 </div>
             </td>
@@ -131,7 +142,7 @@ async function closeOut() {
                         min-height: {max_height}px;
                         max-height: {max_height}px;
                     "
-                    on:dblclick={boxEditable(fileItem, index)}
+                    on:dblclick={boxEditable(linkFile, index)}
                 >
                     <div
                         style="
@@ -141,43 +152,41 @@ async function closeOut() {
                             max-height: {max_height}px;
                         ">
                         <img
-                            src={img_src}
+                            src={getImgSrc(linkFile)}
                             style="
                                 width: {new_box.width()}px;
                                 height: {new_box.height()}px;
                                 scale: {new_box.scale()};
                                 object-fit: none;
-                                object-position: -{new_box.left}px -{new_box.top}px;
+                                object-position: {old_box.left - new_box.left}px {old_box.top - new_box.top}px;
                                 translate: {new_box.translate_x()}px {new_box.translate_y()}px;
                             "
-                            alt="Snippet for {fileItem.title} ({fileItem.file})"
+                            alt="Snippet for {linkFile.title} ({linkFile.file})"
                         />
                     </div>
                 </td>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
                     <div style="max-height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
-                        Left: <input type="range" min="{old_box.left - 500}" max="{old_box.right}" bind:value={new_box.left} />
-                        Right: <input type="range" min="{old_box.left}" max="{old_box.right + 500}" bind:value={new_box.right} />
+                        Left: <input type="range" min="{old_box.left}" max="{old_box.right}" bind:value={new_box.left} />
+                        Right: <input type="range" min="{old_box.left}" max="{old_box.right}" bind:value={new_box.right} />
                     </div>
                 </div>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
                     <div style="max-height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
-                        Top: <input type="range" min="{old_box.top - 100}" max="{old_box.bottom}" bind:value={new_box.top} />
-                        Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom + 100}" bind:value={new_box.bottom} />
+                        Top: <input type="range" min="{old_box.top}" max="{old_box.bottom}" bind:value={new_box.top} />
+                        Bottom: <input type="range" min="{old_box.top}" max="{old_box.bottom}" bind:value={new_box.bottom} />
                     </div>
                 </div>
                 <div class="snippet" style="height: 50px; position: relative; min-width: {max_width}px; max-width: {max_width}px;">
                     <div style="height: 50px;  width: {max_width}px; position: absolute; bottom: 0px;">
-                        <button on:click={updateBox(fileItem.box_id)}>Submit</button>
+                        <button on:click={updateBox(linkFile.box_id)}>Submit</button>
                     </div>
                 </div>
             </div>
             {/if}
-            <Title closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
-            <td>{fileItem.year}</td>
-            <td>{fileItem.rating}</td>
-            <td>{fileItem.votes}</td>
-            <Link closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
+            <Title closeOut={closeOut} item={linkFile} index={index} show_title={false} availableTitles={availableTitles}/>
+            <Link closeOut={closeOut} item={linkFile} index={index} show_title={false}/>
+            {/if}
         </tr>
         {/each}
     {/if}
@@ -210,5 +219,4 @@ table {
     padding-top: 0px;
     padding-bottom: 0px;
 }
-
 </style>

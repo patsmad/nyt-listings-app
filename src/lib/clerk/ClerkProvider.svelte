@@ -1,6 +1,6 @@
 <script>
 import { onMount } from 'svelte'
-import { clerk } from './clerk.js'
+import { clerk, session } from './clerk.js'
 
 let frontendApi = import.meta.env.VITE_CLERK_FRONTEND_API;
 let pub_key = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -14,7 +14,8 @@ onMount(()=>{
     script.src = `https://${frontendApi}/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
     script.addEventListener('load', function(){
         window.Clerk.load({ navigate : navigate || undefined }).then((e)=>{
-            clerk.update(() => window.Clerk)
+            clerk.update(() => window.Clerk);
+            session.update(() => window.Clerk.session);
         })
     });
     document.body.appendChild(script);

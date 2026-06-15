@@ -2,13 +2,9 @@
 import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { linkFiles, linkFilesData, max_height, max_width } from './link.js';
-import Channel from '../update/Channel.svelte';
 import Confirmed from '../update/Confirmed.svelte';
 import Delete from '../update/Delete.svelte';
-import Duration from '../update/Duration.svelte';
 import Link from '../update/Link.svelte';
-import Time from '../update/Time.svelte';
-import VCRCode from '../update/VCRCode.svelte';
 
 export let selected;
 
@@ -39,7 +35,7 @@ function sortColumnFunction(fnc, activeTH) {
 }
 
 function getImgSrc(linkFile) {
-    return 'http://localhost:5000/img/?file_id=' + linkFile.file_id + '&api_key=' + import.meta.env.VITE_API_KEY +
+    return import.meta.env.VITE_API_HOST + '/img/?file_id=' + linkFile.file_id +
         '&box=' + linkFile.left + ',' + linkFile.top + ',' + linkFile.width + ',' + linkFile.height
 }
 
@@ -55,8 +51,9 @@ function boxEditable(linkFile, index) {
 }
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
-        await fetch('http://localhost:5000/box/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + '/box/update/', {
             method: 'POST',
+            credentials: 'include',
             body: JSON.stringify({
                 'id': box_id,
                 'left': new_box.left,
@@ -65,7 +62,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+        await fetch(import.meta.env.VITE_API_HOST + '/link/?link=' + selected, {credentials: 'include'})
             .then(response => response.json())
             .then(data => linkFilesData.set(data))
         sortedLinkList = sortLinkList();
@@ -76,7 +73,7 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch('http://localhost:5000/link/?link=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + '/link/?link=' + selected, {credentials: 'include'})
         .then(response => response.json())
         .then(data => linkFilesData.set(data))
     sortedLinkList = sortLinkList();

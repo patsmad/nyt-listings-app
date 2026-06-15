@@ -8,7 +8,7 @@ export let selected;
 let years = derived(yearsData, yearsData => yearsData.years??[]);
 
 async function closeOut() {
-    await fetch('http://localhost:5000/year/?year=' + selected +'&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + '/year/?year=' + selected, {credentials: 'include'})
         .then(response => response.json())
         .then(data => yearsData.set(data))
 }
@@ -47,6 +47,7 @@ function sortColumnFunction(fnc, activeTH) {
             <th class="isSortable {active === 'votes' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.votes, 'votes')}>Votes</th>
             <th class="isSortable {active === 'count' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.count, 'count')}>Count</th>
             <th class="isSortable {active === 'total_size' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.total_size, 'total_size')}>Total Size</th>
+            <th class="isSortable {active === 'max_size' ? 'isActive' : ''} {asc ? 'asc' : 'desc'}" on:click={sortColumnFunction(item => item.max_size, 'max_size')}>Max Size</th>
         </tr>
     </thead>
     <tbody>
@@ -60,6 +61,7 @@ function sortColumnFunction(fnc, activeTH) {
                <td>{year?.votes}</td>
                <td>{year?.count}</td>
                <td>{year?.total_size.toFixed(2)}</td>
+               <td>{year?.max_size.toFixed(2)}</td>
            </tr>
         {/each}
     {/if}

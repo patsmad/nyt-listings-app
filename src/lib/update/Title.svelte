@@ -41,8 +41,9 @@ const filterAvailableTitles = () => {
 
 async function updateTitle(link_id) {
     if (new_title != old_title) {
-        await fetch('http://localhost:5000/title/update?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + '/title/update/', {
             method: 'POST',
+            credentials: 'include',
             body: JSON.stringify({
                 'id': link_id,
                 'title': new_title,
@@ -56,8 +57,9 @@ async function updateTitle(link_id) {
 
 async function addTitle(box_id) {
     if (new_title != '') {
-        await fetch('http://localhost:5000/title/add?api_key=' + import.meta.env.VITE_API_KEY, {
+        await fetch(import.meta.env.VITE_API_HOST + '/title/add/', {
             method: 'POST',
+            credentials: 'include',
             body: JSON.stringify({
                 'box_id': box_id,
                 'title': new_title,
@@ -72,8 +74,9 @@ async function addTitle(box_id) {
 async function addOrUpdateTitle(item, available_link) {
     if (available_link != '') {
         if (item.link === null || item.link == "") {
-            await fetch('http://localhost:5000/link/add?api_key=' + import.meta.env.VITE_API_KEY, {
+            await fetch(import.meta.env.VITE_API_HOST + '/link/add/', {
                 method: 'POST',
+                credentials: 'incldue',
                 body: JSON.stringify({
                     'box_id': item.box_id,
                     'link': available_link,
@@ -81,8 +84,9 @@ async function addOrUpdateTitle(item, available_link) {
                 })
             })
         } else {
-            await fetch('http://localhost:5000/link/update?api_key=' + import.meta.env.VITE_API_KEY, {
+            await fetch(import.meta.env.VITE_API_HOST + '/link/update/', {
                 method: 'POST',
+                credentials: 'include',
                 body: JSON.stringify({
                     'id': item.link_id,
                     'link': available_link,

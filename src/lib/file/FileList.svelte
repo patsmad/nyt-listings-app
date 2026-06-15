@@ -4,6 +4,7 @@ import { writable, derived } from "svelte/store";
 import { annotatedFileData } from './annotated.js';
 import FileItemTable from './FileItemTable.svelte';
 import AnnotatedFile from './AnnotatedFile.svelte';
+import { clerk } from '../clerk/clerk.js'
 
 let img_src;
 let files = writable([]);
@@ -27,7 +28,7 @@ if (selected) {
 
 onMount(async () => {
     annotatedFileData.set([]);
-    await fetch('http://localhost:5000/files/?api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + '/files/', {credentials: 'include'})
         .then(response => response.json())
         .then(data => files.set(data))
 });
@@ -36,10 +37,10 @@ let selectedFileIndex = derived(
     sortedFiles => sortedFiles.findIndex(file => file.id == selected)
 );
 async function handleSelected() {
-    await fetch('http://localhost:5000/file/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY)
+    await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
-    img_src = 'http://localhost:5000/img/?file_id=' + selected + '&api_key=' + import.meta.env.VITE_API_KEY
+    img_src = import.meta.env.VITE_API_HOST + '/img/?file_id=' + selected
     display = true;
 }
 </script>
