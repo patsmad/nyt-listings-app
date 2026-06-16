@@ -26,11 +26,22 @@ if (selected) {
     handleSelected();
 }
 
+let availableTitles;
+
+async function setAvailableTitles() {
+    if (!availableTitles) {
+        await authFetch('/available_titles/')
+            .then(response => response.json())
+            .then(data => availableTitles = data)
+    }
+}
+
 onMount(async () => {
     annotatedFileData.set([]);
     await authFetch('/files/')
         .then(response => response.json())
         .then(data => files.set(data))
+    setAvailableTitles();
 });
 let selectedFileIndex = derived(
     sortedFiles,
@@ -75,11 +86,11 @@ async function handleSelected() {
     </div>
     {#if display_table}
     <div class="card">
-        <FileItemTable img_src={img_src} selected={selected} />
+        <FileItemTable img_src={img_src} selected={selected} availableTitles={availableTitles} />
     </div>
     {:else}
     <div class="card">
-        <AnnotatedFile img_src={img_src} selected={selected} />
+        <AnnotatedFile img_src={img_src} selected={selected} availableTitles={availableTitles} />
     </div>
     {/if}
     {/if}

@@ -9,6 +9,7 @@ import AuthImage from '../clerk/AuthImage.svelte';
 
 export let img_src;
 export let selected;
+export let availableTitles;
 
 let img;
 let original_height;
@@ -16,15 +17,6 @@ let new_height;
 let display_img = false;
 let x1;
 let y1;
-let availableTitles;
-
-async function setAvailableTitles() {
-    if (!availableTitles) {
-        await authFetch('/available_titles/')
-            .then(response => response.json())
-            .then(data => availableTitles = data)
-    }
-}
 
 function loadImg() {
     if (img) {
@@ -119,7 +111,6 @@ function openModal(fileItem) {
     modalPosterLink = '/poster/?link=' + fileItem.link
     new_box = fileItem.box();
     old_box = fileItem.box();
-    setAvailableTitles();
     dialog.showModal();
 }
 

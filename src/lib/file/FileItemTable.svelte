@@ -11,6 +11,7 @@ import AuthImage from '../clerk/AuthImage.svelte';
 
 export let img_src;
 export let selected;
+export let availableTitles;
 
 let asc = true;
 let active = 'time';
@@ -174,7 +175,7 @@ async function closeOut() {
                 </div>
             </div>
             {/if}
-            <Title closeOut={closeOut} item={fileItem} index={index} show_title={false}/>
+            <Title closeOut={closeOut} item={fileItem} index={index} show_title={false} availableTitles={availableTitles}/>
             <td>{fileItem.year}</td>
             <td>{fileItem.rating}</td>
             <td>{fileItem.votes}</td>
