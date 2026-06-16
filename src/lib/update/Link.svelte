@@ -1,5 +1,6 @@
 <script>
 import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
+import { authFetch } from '../clerk/clerk.js';
 
 export let item;
 export let index;
@@ -29,9 +30,8 @@ function makeLinkEditable(link, index) {
 
 async function updateLink(link_id) {
     if (new_link != old_link) {
-        await fetch(import.meta.env.VITE_API_HOST + '/link/update/', {
+        await awaitFetch('/link/update/', {
             method: 'POST',
-            credentials: 'include',
             body: JSON.stringify({
                 'id': link_id,
                 'link': new_link,
@@ -45,9 +45,8 @@ async function updateLink(link_id) {
 
 async function addLink(box_id) {
     if (new_link != '') {
-        await fetch(import.meta.env.VITE_API_HOST + '/link/add/', {
+        await authFetch('/link/add/', {
             method: 'POST',
-            credentials: 'include',
             body: JSON.stringify({
                 'box_id': box_id,
                 'link': new_link,

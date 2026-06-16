@@ -1,4 +1,6 @@
 <script>
+import { authFetch } from '../clerk/clerk.js';
+
 export let item;
 export let index;
 export let closeOut;
@@ -41,9 +43,8 @@ const filterAvailableTitles = () => {
 
 async function updateTitle(link_id) {
     if (new_title != old_title) {
-        await fetch(import.meta.env.VITE_API_HOST + '/title/update/', {
+        await authFetch('/title/update/', {
             method: 'POST',
-            credentials: 'include',
             body: JSON.stringify({
                 'id': link_id,
                 'title': new_title,
@@ -57,9 +58,8 @@ async function updateTitle(link_id) {
 
 async function addTitle(box_id) {
     if (new_title != '') {
-        await fetch(import.meta.env.VITE_API_HOST + '/title/add/', {
+        await authFetch('/title/add/', {
             method: 'POST',
-            credentials: 'include',
             body: JSON.stringify({
                 'box_id': box_id,
                 'title': new_title,
@@ -74,9 +74,8 @@ async function addTitle(box_id) {
 async function addOrUpdateTitle(item, available_link) {
     if (available_link != '') {
         if (item.link === null || item.link == "") {
-            await fetch(import.meta.env.VITE_API_HOST + '/link/add/', {
+            await authFetch('/link/add/', {
                 method: 'POST',
-                credentials: 'incldue',
                 body: JSON.stringify({
                     'box_id': item.box_id,
                     'link': available_link,
@@ -84,9 +83,8 @@ async function addOrUpdateTitle(item, available_link) {
                 })
             })
         } else {
-            await fetch(import.meta.env.VITE_API_HOST + '/link/update/', {
+            await authFetch('/link/update/', {
                 method: 'POST',
-                credentials: 'include',
                 body: JSON.stringify({
                     'id': item.link_id,
                     'link': available_link,

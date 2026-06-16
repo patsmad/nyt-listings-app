@@ -2,13 +2,14 @@
 import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { titlesData } from './title.js';
+import { authFetch } from '../clerk/clerk.js';
 
 export let selected;
 
 let titles = derived(titlesData, titlesData => titlesData.titles??[]);
 
 async function closeOut() {
-    await fetch(import.meta.env.VITE_API_HOST + '/title/?title=' + selected, {credentials: 'include'})
+    await authFetch('/title/?title=' + selected)
         .then(response => response.json())
         .then(data => titlesData.set(data))
 }

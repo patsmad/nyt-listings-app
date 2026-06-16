@@ -2,13 +2,14 @@
 import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { yearsData } from './year.js';
+import { authFetch } from '../clerk/clerk.js';
 
 export let selected;
 
 let years = derived(yearsData, yearsData => yearsData.years??[]);
 
 async function closeOut() {
-    await fetch(import.meta.env.VITE_API_HOST + '/year/?year=' + selected, {credentials: 'include'})
+    await authFetch('/year/?year=' + selected)
         .then(response => response.json())
         .then(data => yearsData.set(data))
 }

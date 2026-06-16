@@ -6,6 +6,8 @@ import Confirmed from '../update/Confirmed.svelte';
 import Delete from '../update/Delete.svelte';
 import Link from '../update/Link.svelte';
 import Title from '../update/Title.svelte';
+import { authFetch } from '../clerk/clerk.js';
+import AuthImage from '../clerk/AuthImage.svelte';
 
 export let img_src;
 export let selected;
@@ -44,9 +46,8 @@ function boxEditable(fileItem, index) {
 }
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
-        await fetch(import.meta.env.VITE_API_HOST + '/box/update/', {
+        await authFetch('/box/update/', {
             method: 'POST',
-            credentials: 'include',
             body: JSON.stringify({
                 'id': box_id,
                 'left': new_box.left,
@@ -55,7 +56,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
+        await authFetch('/file/?file_id=' + selected)
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
         sortedFileItems = sortFileItems();
@@ -66,7 +67,7 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
+    await authFetch('/file/?file_id=' + selected)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
     sortedFileItems = sortFileItems();
@@ -111,7 +112,7 @@ async function closeOut() {
                         min-height: {max_height}px;
                         max-height: {max_height}px;
                     ">
-                    <img src={img_src} style="
+                    <AuthImage src={img_src} style="
                         width: {fileItem.width}px;
                         height: {fileItem.height}px;
                         scale: {fileItem.scale()};
@@ -140,7 +141,7 @@ async function closeOut() {
                             min-height: {max_height}px;
                             max-height: {max_height}px;
                         ">
-                        <img
+                        <AuthImage
                             src={img_src}
                             style="
                                 width: {new_box.width()}px;

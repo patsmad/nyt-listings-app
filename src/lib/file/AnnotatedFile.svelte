@@ -4,6 +4,8 @@ import { fileItems, max_width, max_height } from './file.js';
 import Delete from '../update/Delete.svelte';
 import Link from '../update/Link.svelte';
 import Title from '../update/Title.svelte';
+import { authFetch } from '../clerk/clerk.js';
+import AuthImage from '../clerk/AuthImage.svelte';
 
 export let img_src;
 export let selected;
@@ -18,7 +20,7 @@ let availableTitles;
 
 async function setAvailableTitles() {
     if (!availableTitles) {
-        await fetch(import.meta.env.VITE_API_HOST + '/available_titles/', {credentials: 'include'})
+        await authFetch('/available_titles/')
             .then(response => response.json())
             .then(data => availableTitles = data)
     }
@@ -54,9 +56,8 @@ async function addItem(mouse) {
             top = y2;
             bottom = y1;
         }
-        await fetch(import.meta.env.VITE_API_HOST + '/item/add/', {
+        await authFetch('/item/add/', {
             method: 'POST',
-            credentials: 'include',
             body: JSON.stringify({
                 'file_id': selected,
                 'left': parseInt(left),
@@ -65,7 +66,7 @@ async function addItem(mouse) {
                 'height': parseInt(bottom - top)
             })
         })
-        await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
+        await authFetch('/file/?file_id=' + selected)
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
         x1 = null;
@@ -86,9 +87,8 @@ function boxEditable(fileItem) {
 }
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
-        await fetch(import.meta.env.VITE_API_HOST + '/box/update/', {
+        await authFetch('/box/update/', {
             method: 'POST',
-            credentials: 'include',
             body: JSON.stringify({
                 'id': box_id,
                 'left': new_box.left,
@@ -97,7 +97,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
+        await authFetch('/file/?file_id=' + selected)
             .then(response => response.json())
             .then(data => annotatedFileData.set(data))
     }
@@ -105,7 +105,7 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch(import.meta.env.VITE_API_HOST + '/file/?file_id=' + selected, {credentials: 'include'})
+    await authFetch('/file/?file_id=' + selected)
         .then(response => response.json())
         .then(data => annotatedFileData.set(data))
     closeModal();
@@ -116,7 +116,7 @@ let modalFileItem;
 let modalPosterLink;
 function openModal(fileItem) {
     modalFileItem = fileItem;
-    modalPosterLink = import.meta.env.VITE_API_HOST + '/poster/?link=' + fileItem.link
+    modalPosterLink = '/poster/?link=' + fileItem.link
     new_box = fileItem.box();
     old_box = fileItem.box();
     setAvailableTitles();
@@ -130,9 +130,8 @@ function closeModal() {
 }
 
 async function checkTitles(file_id) {
-    await fetch(import.meta.env.VITE_API_HOST + '/title/check/', {
+    await authFetch('/title/check/', {
         method: 'POST',
-        credentials: 'include',
         body: JSON.stringify({
             'file_id': file_id
         })
@@ -148,9 +147,9 @@ async function checkTitles(file_id) {
     </button>
     {#if $fileItems}
     <div>
-        <img class="annotated-file"
+        <AuthImage class="annotated-file"
             style="height: {new_height}px;"
-            bind:this={img}
+            bind:thisElement={img}
             src={img_src}
             alt="Annotated file for file id {selected}"
             on:load={loadImg}
@@ -161,10 +160,10 @@ async function checkTitles(file_id) {
             <div class="snippet" style="height: {max_height + 150}px; min-width: {max_width}px; max-width: {max_width}px; display: inline-block;">
                 {#if modalFileItem?.link}
                     <a href={modalFileItem?.link} target="_blank">
-                        <img src={modalPosterLink} alt="Poster for {modalFileItem.title} ({modalFileItem.year})"/>
+                        <AuthImage src={modalPosterLink} alt="Poster for {modalFileItem.title} ({modalFileItem.year})"/>
                     </a>
                 {:else}
-                    <img src={modalPosterLink} alt="Poster for {modalFileItem.title} ({modalFileItem.year})"/>
+                    <AuthImage src={modalPosterLink} alt="Poster for {modalFileItem.title} ({modalFileItem.year})"/>
                 {/if}
                 <div style="min-width: {max_width}px; max-width: {max_width}px;">
                     <Link closeOut={closeOut} item={modalFileItem} index=1 show_title={true}/>
@@ -185,7 +184,7 @@ async function checkTitles(file_id) {
             </div>
             <div class="snippet" style="height: {max_height+ 150}px; min-width: {max_width}px; max-width: {max_width}px; display: inline-block; overflow: hidden;">
                 <div class="snippet" style="min-height: {max_height}px; max-height: {max_height}px; min-width: {max_width}px; max-width: {max_width}px;">
-                    <img
+                    <AuthImage
                         src={img_src}
                         style="
                             width: {new_box.width()}px;

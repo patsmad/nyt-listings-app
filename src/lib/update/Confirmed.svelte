@@ -1,13 +1,13 @@
 <script>
+import { authFetch } from '../clerk/clerk.js';
 
 export let item;
 export let index;
 export let closeOut;
 
 async function updateConfirmed(link_id) {
-    await fetch(import.meta.env.VITE_API_HOST + '/link/update/', {
+    await authFetch('/link/update/', {
         method: 'POST',
-        credentials: 'include',
         body: JSON.stringify({
             'id': link_id,
             'confirmed': !item.confirmed

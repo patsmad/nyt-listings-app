@@ -5,6 +5,8 @@ import { linkFiles, linkFilesData, max_height, max_width } from './link.js';
 import Confirmed from '../update/Confirmed.svelte';
 import Delete from '../update/Delete.svelte';
 import Link from '../update/Link.svelte';
+import { authFetch } from '../clerk/clerk.js';
+import AuthImage from '../clerk/AuthImage.svelte';
 
 export let selected;
 
@@ -35,7 +37,7 @@ function sortColumnFunction(fnc, activeTH) {
 }
 
 function getImgSrc(linkFile) {
-    return import.meta.env.VITE_API_HOST + '/img/?file_id=' + linkFile.file_id +
+    return '/img/?file_id=' + linkFile.file_id +
         '&box=' + linkFile.left + ',' + linkFile.top + ',' + linkFile.width + ',' + linkFile.height
 }
 
@@ -51,9 +53,8 @@ function boxEditable(linkFile, index) {
 }
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
-        await fetch(import.meta.env.VITE_API_HOST + '/box/update/', {
+        await authFetch('/box/update/', {
             method: 'POST',
-            credentials: 'include',
             body: JSON.stringify({
                 'id': box_id,
                 'left': new_box.left,
@@ -62,7 +63,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch(import.meta.env.VITE_API_HOST + '/link/?link=' + selected, {credentials: 'include'})
+        await authFetch('/link/?link=' + selected)
             .then(response => response.json())
             .then(data => linkFilesData.set(data))
         sortedLinkList = sortLinkList();
@@ -73,7 +74,7 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch(import.meta.env.VITE_API_HOST + '/link/?link=' + selected, {credentials: 'include'})
+    await authFetch('/link/?link=' + selected)
         .then(response => response.json())
         .then(data => linkFilesData.set(data))
     sortedLinkList = sortLinkList();
@@ -128,7 +129,7 @@ async function closeOut() {
                         min-height: {max_height}px;
                         max-height: {max_height}px;
                     ">
-                    <img
+                    <AuthImage
                         src={getImgSrc(linkFile)}
                         style="
                             display: flex;
@@ -160,7 +161,7 @@ async function closeOut() {
                             min-height: {max_height}px;
                             max-height: {max_height}px;
                         ">
-                        <img
+                        <AuthImage
                             src={getImgSrc(linkFile)}
                             style="
                                 width: {new_box.width()}px;

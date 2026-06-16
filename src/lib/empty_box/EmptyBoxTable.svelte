@@ -5,6 +5,7 @@ import { linkFiles, linkFilesData, max_width, max_height } from './empty_box.js'
 import Delete from '../update/Delete.svelte';
 import Link from '../update/Link.svelte';
 import Title from '../update/Title.svelte';
+import { authFetch } from '../clerk/clerk.js';
 
 export let availableTitles;
 
@@ -52,9 +53,8 @@ function boxEditable(linkFile, index) {
 
 async function updateBox(box_id) {
     if (!new_box.match(old_box)) {
-        await fetch(import.meta.env.VITE_API_HOST + '/box/update/', {
+        await authFetch('/box/update/', {
             method: 'POST',
-            credentials: 'include',
             body: JSON.stringify({
                 'id': box_id,
                 'left': new_box.left,
@@ -63,7 +63,7 @@ async function updateBox(box_id) {
                 'height': new_box.height()
             })
         })
-        await fetch(import.meta.env.VITE_API_HOST + '/empty_boxes/', {credentials: 'include'})
+        await authFetch('/empty_boxes/')
             .then(response => response.json())
             .then(data => linkFilesData.set(data))
         sortedLinkList = sortLinkList();
@@ -74,7 +74,7 @@ async function updateBox(box_id) {
 }
 
 async function closeOut() {
-    await fetch(import.meta.env.VITE_API_HOST + '/empty_boxes/', {credentials: 'include'})
+    await authFetch('/empty_boxes/')
         .then(response => response.json())
         .then(data => linkFilesData.set(data))
     sortedLinkList = sortLinkList();

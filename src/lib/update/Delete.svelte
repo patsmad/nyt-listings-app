@@ -4,6 +4,7 @@ export let item;
 export let index;
 export let closeOut;
 export let show_title;
+import { authFetch } from '../clerk/clerk.js';
 
 let item_deletable;
 resetDelete();
@@ -19,9 +20,8 @@ function makeItemDeletable(index) {
 }
 
 async function deleteItem(item_id) {
-    await fetch(import.meta.env.VITE_API_HOST + '/item/delete/', {
+    await authFetch('/item/delete/', {
         method: 'POST',
-        credentials: 'include',
         body: JSON.stringify({
             'id': item_id
         })

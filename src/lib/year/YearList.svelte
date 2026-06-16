@@ -2,6 +2,7 @@
 import { writable, derived } from "svelte/store";
 import { yearsData } from './year.js';
 import YearTable from './YearTable.svelte';
+import { authFetch } from '../clerk/clerk.js';
 
 let display_table = false;
 let urlParams = new URLSearchParams(window.location.search);
@@ -11,7 +12,7 @@ if (selected) {
 }
 
 function handleSelected()  {
-    fetch(import.meta.env.VITE_API_HOST + '/year/?year=' + selected, {credentials: 'include'})
+    authFetch('/year/?year=' + selected)
         .then(response => response.json())
         .then(data => yearsData.set(data))
     display_table = true;

@@ -2,6 +2,7 @@
 import { writable, derived } from "svelte/store";
 import { titlesData } from './title.js';
 import TitleTable from './TitleTable.svelte';
+import { authFetch } from '../clerk/clerk.js';
 
 let display_table = false;
 let urlParams = new URLSearchParams(window.location.search);
@@ -11,7 +12,7 @@ if (selected) {
 }
 
 function handleSelected()  {
-    fetch(import.meta.env.VITE_API_HOST + '/title/?title=' + selected, {credentials: 'include'})
+    authFetch('/title/?title=' + selected)
         .then(response => response.json())
         .then(data => titlesData.set(data))
     display_table = true;

@@ -2,19 +2,20 @@
 import { writable, derived } from "svelte/store";
 import { linkFilesData } from './empty_box.js';
 import EmptyBoxTable from './EmptyBoxTable.svelte';
+import { authFetch } from '../clerk/clerk.js';
 
 let availableTitles;
 
 async function setAvailableTitles() {
     if (!availableTitles) {
-        await fetch(import.meta.env.VITE_API_HOST + '/available_titles/', {credentials: 'include'})
+        await authFetch('/available_titles/')
             .then(response => response.json())
             .then(data => availableTitles = data)
     }
 }
 
 function startUp()  {
-    fetch(import.meta.env.VITE_API_HOST + '/empty_boxes/', {credentials: 'include'})
+    authFetch('/empty_boxes/')
         .then(response => response.json())
         .then(data => linkFilesData.set(data))
     setAvailableTitles();
