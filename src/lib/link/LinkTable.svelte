@@ -1,5 +1,4 @@
 <script>
-import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { linkFiles, linkFilesData, max_height, max_width } from './link.js';
 import Confirmed from '../update/Confirmed.svelte';
@@ -87,7 +86,7 @@ async function closeOut() {
 {/if}
 <table class="link-file-info">
     <tr>
-        <td><a href={$linkFiles?.link_info?.link} target="_blank"><img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" /></a></td>
+        <td><a href={$linkFiles?.link_info?.link} target="_blank"><img src='/IMDb_Logo_Square_Gold.png' class="imdb-logo" alt="IMDb Logo" /></a></td>
         <td>{$linkFiles?.link_info?.title}</td>
         <td>{$linkFiles?.link_info?.year}</td>
         <td>{$linkFiles?.link_info?.rating}</td>

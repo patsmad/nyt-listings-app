@@ -1,5 +1,4 @@
 <script>
-import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { titlesData } from './title.js';
 import { authFetch } from '../clerk/clerk.js';
@@ -31,7 +30,7 @@ async function closeOut() {
     {#if $titles}
         {#each $titles as title, index}
             <tr>
-               <td><a href={title?.link} target="_blank"><img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" /></a></td>
+               <td><a href={title?.link} target="_blank"><img src='/IMDb_Logo_Square_Gold.png' class="imdb-logo" alt="IMDb Logo" /></a></td>
                <td><a href='/link?link_id={title?.link}'>{title?.title}</a></td>
                <td>{title?.year}</td>
                <td>{title?.rating}</td>

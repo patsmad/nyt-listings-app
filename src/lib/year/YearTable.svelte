@@ -1,5 +1,4 @@
 <script>
-import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { yearsData } from './year.js';
 import { authFetch } from '../clerk/clerk.js';
@@ -55,7 +54,7 @@ function sortColumnFunction(fnc, activeTH) {
     {#if $sortedYears}
         {#each $sortedYears as year, index}
             <tr>
-               <td><a href={year?.link} target="_blank"><img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" /></a></td>
+               <td><a href={year?.link} target="_blank"><img src='/IMDb_Logo_Square_Gold.png' class="imdb-logo" alt="IMDb Logo" /></a></td>
                <td><a href='/link?link_id={year?.link}'>{year?.title}</a></td>
                <td>{year?.year}</td>
                <td>{year?.rating}</td>

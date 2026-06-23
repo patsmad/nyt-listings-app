@@ -1,5 +1,4 @@
 <script>
-import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { authFetch } from '../clerk/clerk.js';
 
 export let item;
@@ -65,7 +64,7 @@ async function addLink(box_id) {
     {#if show_title}<b>Link: </b>{/if}
     {#if item?.link}
         <a href={item?.link} target="_blank">
-            {#if show_title}{item?.link}{:else}<img src={imdbLogo} class="imdb-logo" alt="IMDb Logo" />{/if}
+            {#if show_title}{item?.link}{:else}<img src='/IMDb_Logo_Square_Gold.png' class="imdb-logo" alt="IMDb Logo" />{/if}
         </a>
     {/if}
 {:else}

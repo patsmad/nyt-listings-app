@@ -1,5 +1,4 @@
 <script>
-    import bmtLogo from './assets/bmtlogo1.png'
     import FileList from './lib/file/FileList.svelte'
     import LinkList from './lib/link/LinkList.svelte'
     import TitleList from './lib/title/TitleList.svelte'
@@ -21,7 +20,7 @@
   <span class="heading">
     <div style="width: 25%;">
       <a href="https://www.badmovietwins.com" target="_blank" rel="noreferrer">
-        <img src={bmtLogo} class="logo bmt" alt="BMT Logo" />
+        <img src='/bmtlogo1.png' class="logo bmt" alt="BMT Logo" />
       </a>
     </div>
     <h1 style="width: 75%;">New York Times Adverts</h1>

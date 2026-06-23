@@ -1,11 +1,11 @@
 <script>
-import imdbLogo from '../../assets/IMDb_Logo_Square_Gold.png'
 import { derived } from 'svelte/store'
 import { linkFiles, linkFilesData, max_width, max_height } from './empty_box.js';
 import Delete from '../update/Delete.svelte';
 import Link from '../update/Link.svelte';
 import Title from '../update/Title.svelte';
 import { authFetch } from '../clerk/clerk.js';
+import AuthImage from '../clerk/AuthImage.svelte';
 
 export let availableTitles;
 
@@ -119,7 +119,7 @@ async function closeOut() {
                         min-height: {max_height}px;
                         max-height: {max_height}px;
                     ">
-                    <img
+                    <AuthImage
                         src={getImgSrc(linkFile)}
                         style="
                             display: flex;
@@ -151,7 +151,7 @@ async function closeOut() {
                             min-height: {max_height}px;
                             max-height: {max_height}px;
                         ">
-                        <img
+                        <AuthImage
                             src={getImgSrc(linkFile)}
                             style="
                                 width: {new_box.width()}px;
